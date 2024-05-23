@@ -25,6 +25,12 @@ class PostVideosSerializer(serializers.ModelSerializer):
         model = PostVideos
         fields = ('video',)
         
+    def create(self, validated_data):
+        video = validated_data.pop('video')
+        if video:
+            post_video = PostVideos.objects.create(video=video, **validated_data)
+            return post_video
+        
 class PostCommentSerializer(serializers.ModelSerializer):
     sender = UserSerializer()
     
@@ -61,12 +67,16 @@ class PostSerializer(serializers.ModelSerializer):
         author_id = self.initial_data.get('author_id')
         author = CustomUser.objects.get(pk=author_id)
         images_data = self.context.get('request').FILES.getlist('post_images')
+        video_data = self.context.get('request').FILES['post_video']
         
         post = Post.objects.create(author=author, **validated_data)
         
         if images_data:
             for image_data in images_data:
                 PostImages.objects.create(post=post, images=image_data)
+                
+        if video_data:
+            PostVideos.objects.create(post=post, video=video_data)
             
         return post
     
