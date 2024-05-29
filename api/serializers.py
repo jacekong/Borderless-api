@@ -67,7 +67,7 @@ class PostSerializer(serializers.ModelSerializer):
         author_id = self.initial_data.get('author_id')
         author = CustomUser.objects.get(pk=author_id)
         images_data = self.context.get('request').FILES.getlist('post_images')
-        video_data = self.context.get('request').FILES['post_video']
+        video_data = self.context.get('request').FILES.get('post_video')
         
         post = Post.objects.create(author=author, **validated_data)
         
