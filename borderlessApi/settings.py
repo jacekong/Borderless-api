@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'api',
-    'users',
+    # 'users',
     'friend',
     'chat',
     'rest_framework',
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'channels',
     'channels_redis',
+    'users.apps.UsersConfig'
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -115,6 +116,15 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'borderlessApi.urls'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'jacekong97@gmail.com'
+EMAIL_HOST_PASSWORD = 'yety deot gdwl iwnz'
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
 
 TEMPLATES = [
     {
