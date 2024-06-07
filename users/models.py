@@ -34,7 +34,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=150,)
     user_id = models.CharField(max_length=15, unique=True)
     avatar = ResizedImageField(upload_to='avatars/', size=[320, None], null=True, blank=True, default='avatars/avatar.jpg')
-    bio = models.CharField(max_length=250, null=True, blank=True, default='')
+    bio = models.CharField(max_length=250, blank=True, default='')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
