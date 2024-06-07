@@ -29,6 +29,7 @@ def create_notification(instance, created, **kwargs):
                 'type': 'send_text_notification',
                 'receiver': data['receiver']['user_id'], # receiver id
                 'sender': data['sender']['username'], # sender user name
+                'sender_id': data['sender']['user_id'],
                 'avatar': data['sender']['avatar'], # sender avatar
                 'notification': data['message'], # message content
                 'timestamp': data['timestamp'],
@@ -57,6 +58,7 @@ def create_iamge_notification(instance, created, **kwargs):
                 'type': 'send_image_notification',
                 'receiver': data['receiver']['user_id'], # receiver id
                 'sender': data['sender']['username'], # sender user name
+                'sender_id': data['sender']['user_id'],
                 'avatar': data['sender']['avatar'], # sender avatar
                 'notification': data['message'], # message content
                 'timestamp': data['timestamp'],
@@ -87,6 +89,7 @@ def create_audio_notification(instance, created, **kwargs):
                     'type': 'send_audio_notification',
                     'receiver': data['receiver']['user_id'], # receiver id
                     'sender': data['sender']['username'], # sender user name
+                    'sender_id': data['sender']['user_id'],
                     'avatar': data['sender']['avatar'], # sender avatar
                     'notification': data['message'], # message content
                     'timestamp': data['timestamp'],

@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'api',
-    # 'users',
+    'users',
     'friend',
     'chat',
     'rest_framework',
@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'channels',
     'channels_redis',
-    'users.apps.UsersConfig'
+    # 'users.apps.UsersConfig'
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'

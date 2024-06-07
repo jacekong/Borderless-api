@@ -72,7 +72,7 @@ class ChatList(models.Model):
             
     # 3. update chat_list when receive or send audio message
     @receiver(post_save, sender=AudioMessage)
-    def update_chat_list_image(instance, created, **kwargs):
+    def update_chat_list_audio(instance, created, **kwargs):
         if created:
             # get both user1 and user2
             user1 = instance.sender

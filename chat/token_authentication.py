@@ -11,7 +11,7 @@ class JWTAuthentication(BaseAuthentication):
     
     @database_sync_to_async
     def authenticate_user(self, scope, token):
-        print(f'-------------token: {token}--------------')
+        # print(f'-------------token: {token}--------------')
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
             user_id = payload['user_id']

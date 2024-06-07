@@ -197,6 +197,9 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         receiver = event['receiver']
         sender = event['sender']
         
+        sender_id = event['sender_id']
+        print(sender_id)
+        
         text = event['notification']
         avatar = event['avatar']
         
@@ -205,6 +208,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                 'notification': text,
                 'receiver': receiver,
                 'sender': sender,
+                'sender_id': sender_id,
                 'avatar': str(settings.BASE_URL + avatar),
                 'timestamp': timestamp,
                 'message_type': 'text',
@@ -218,6 +222,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         
         receiver = event['receiver']
         sender = event['sender']
+        
+        sender_id = event['sender_id']
 
         image = event['notification']
         avatar = event['avatar']
@@ -227,6 +233,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     'notification': str(settings.BASE_URL + image),
                     'receiver': receiver,
                     'sender': sender,
+                    'sender_id': sender_id,
                     'avatar': str(settings.BASE_URL + avatar),
                     'timestamp': timestamp,
                     'message_type': 'image',
@@ -240,6 +247,8 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         
         receiver = event['receiver']
         sender = event['sender']
+        
+        sender_id = event['sender_id']
 
         audio = event['notification']
         avatar = event['avatar']
@@ -249,6 +258,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
                     'notification': audio,
                     'receiver': receiver,
                     'sender': sender,
+                    'sender_id': sender_id,
                     'avatar': str(settings.BASE_URL + avatar),
                     'timestamp': timestamp,
                     'message_type': 'audio',
