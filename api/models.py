@@ -9,6 +9,7 @@ class Post(models.Model):
     post_id       = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, primary_key=True)
     author        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     post_content  = models.TextField(blank=True, null=True)
+    is_public     = models.BooleanField(default=False)
     created_date  = models.DateTimeField(auto_now_add=True, editable=False)
     modified_date = models.DateTimeField(auto_now=True, editable=False)
     
