@@ -32,18 +32,31 @@ class PostsAPIView(APIView):
             return Response(post_serializer.data, status=201)
         return Response(post_serializer.errors, status=400)
 
-    
+    # get post based on user's friends, can only friends be seen each other
     def get(self, request, format=None):
         user = request.user
         friends_list = FriendList.objects.filter(user=user)
         if friends_list.exists():
             friend_ids = friends_list.values_list('friends', flat=True)
-            posts = Post.objects.filter(Q(author=user) | Q(author__id__in=friend_ids)).order_by('-created_date')
+            posts = Post.objects.filter(Q(author=user) | Q(author__id__in=friend_ids) | Q(is_public=False)).order_by('-created_date')
         else:
             # If the user doesn't have friends, retrieve only their own posts
-            posts = Post.objects.filter(author=user).order_by('-created_date')
+            posts = Post.objects.filter(Q(author=user) & Q(is_public=False)).order_by('-created_date')
             
         serializer = PostSerializer(posts, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+# get all the public posts   
+class PublicPostAPIView(APIView):
+    parser_classes = [FormParser, MultiPartParser]
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request, format=None):
+        user = request.user
+        posts = Post.objects.filter(is_public=True).order_by('-created_date')
+        
+        serializer = PostSerializer(posts, many=True, context={'request': request})
+        
         return Response(serializer.data, status=status.HTTP_200_OK)
             
 # get logged in user's posts
@@ -119,7 +132,7 @@ class LogoutView(APIView):
 
 
 class GetRoutesView(APIView):
-    
+    permission_classes = [IsAuthenticated]
     def get(self, rquest):
         routes = [
             {

@@ -48,7 +48,7 @@ class PostSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Post
-        fields = ('post_id', 'post_content', 'created_date', 'modified_date', 'post_comments', 'post_images', 'post_video', 'author_id', 'author')
+        fields = ('post_id', 'post_content', 'created_date', 'modified_date', 'post_comments', 'post_images', 'post_video', 'author_id', 'author', 'is_public')
 
     def get_author(self, obj):
         author_id = obj.author_id  # Access the author_id from the Post object
