@@ -38,7 +38,7 @@ class PostsAPIView(APIView):
         friends_list = FriendList.objects.filter(user=user)
         if friends_list.exists():
             friend_ids = friends_list.values_list('friends', flat=True)
-            posts = Post.objects.filter(Q(author=user) | Q(author__id__in=friend_ids) | Q(is_public=False)).order_by('-created_date')
+            posts = Post.objects.filter(Q(author=user) & Q(is_public=False) | Q(author__id__in=friend_ids) & Q(is_public=False)).order_by('-created_date')
         else:
             # If the user doesn't have friends, retrieve only their own posts
             posts = Post.objects.filter(Q(author=user) & Q(is_public=False)).order_by('-created_date')
