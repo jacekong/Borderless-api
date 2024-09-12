@@ -5,6 +5,7 @@ from django_resized import ResizedImageField
 import random
 import numpy as np
 
+from allauth.socialaccount.models import SocialAccount
 
 class CustomUserManager(BaseUserManager):
     def _create_user(self, email, username, password=None, **extra_fields):
@@ -13,7 +14,7 @@ class CustomUserManager(BaseUserManager):
         email = self.normalize_email(email)
         user = self.model(email=email, username=username, **extra_fields)
         user.set_password(password)
-        # user.user_id = user._get_random_id()
+        
         user.save(using=self._db)
         return user
 
@@ -50,7 +51,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         verbose_name_plural = 'Users'
 
     def __str__(self):
-        return self.email
+        return self.username
 
     def _get_random_id(self):
         numbers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]

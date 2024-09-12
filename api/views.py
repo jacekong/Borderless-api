@@ -136,7 +136,7 @@ class LogoutView(APIView):
 from django.views import View
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 class Index(LoginRequiredMixin, View):
     def get(self, request):
@@ -147,6 +147,12 @@ class Index(LoginRequiredMixin, View):
             posts = Post.objects.prefetch_related('post_images').filter(Q(author=user) | Q(author__id__in=friend_ids)).order_by('-created_date')
             
             context = {"posts": posts}
+            
+            return render(request, 'home/index.html', context)
+        else:
+            posts = Post.objects.filter(Q(author=user) & Q(is_public=True))
+            context = {"posts": posts}
+            
             return render(request, 'home/index.html', context)
         
 class WebGetPostComments(LoginRequiredMixin, View):
@@ -160,9 +166,8 @@ class WebGetPostComments(LoginRequiredMixin, View):
 class AccountPage(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
-        if user.is_authenticated:
-            posts = Post.objects.prefetch_related('post_images').filter(author=user).order_by('-created_date')
-            context = {"posts": posts}
-            return render(request, 'account/account.html', context=context)
-        else:
-            return Response({'messages': 'user is not authenticated'})      
+
+        posts = Post.objects.prefetch_related('post_images').filter(author=user).order_by('-created_date')
+        context = {"posts": posts}
+        
+        return render(request, 'account/account.html', context=context)
