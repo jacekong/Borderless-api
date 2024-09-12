@@ -62,15 +62,54 @@ def getCurrentUser(request):
     
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-# @permission_classes([IsAuthenticated])
-# @api_view(['GET'])
-# def getAllUsers(request):
-#     # user = request.user
-    
-#     all_users = CustomUser.objects.all()
-#     serializer = UserSerializer(all_users, many=True, context={'request': request})
-    
-#     return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+
+# web
+from django.views import View
+from django.shortcuts import render,redirect
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class UserAuth(View):
+    template_name = 'auth/login.html'
+    def get(self, request):
+         return render(request, self.template_name, {})
+     
+    def post(self, request):
+        if request.method == "POST":
+            email = request.POST["email"]
+            password = request.POST["password"]
+            user = authenticate(request, email=email, password=password)
+
+            if user is not None and user.check_password(password):
+                login(request, user)
+                # Redirect to a success page.
+                return redirect('home')
+            else:
+                # Return an 'invalid login' error message.
+                messages.success(request, ("Wrong credential, please try again...~..~"))
+                return redirect('login')
+        else:
+            return render(request, self.template_name, {})
         
-        
+def logout_user(request):
+    logout(request)
+    return redirect('login')
+
+class WebGetSearchForm(LoginRequiredMixin, View):
+    template = 'account/search_friend.html'
+    
+    def get(self, request):
+        return render(request, self.template, {})
+
+class WebSearchFriend(LoginRequiredMixin, View):
+    
+    def get(self, request):
+        query = request.GET.get('query', '')
+        print(query)
+        friends = None
+        if query:
+            friends = CustomUser.objects.filter(Q(username__icontains=query) | Q(user_id__icontains=query))
+        return render(request, 'account/search_friend.html', {'friends': friends})
+            

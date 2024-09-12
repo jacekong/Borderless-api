@@ -6,35 +6,36 @@ class MessageAdmin(admin.ModelAdmin):
     list_filter = ['sender', 'timestamp']
     
     class Meta:
-        models = Messages
+        model = Messages
         
 class ChatListAdmin(admin.ModelAdmin):
     list_display = ['user1', 'user2', 'created_at', 'updated_at']
     list_filter = ['user1', 'user2', 'created_at']
     
     class Meta:
-        models = ChatList
+        model = ChatList
         
 class AudioAdmin(admin.ModelAdmin):
     list_display = ['sender', 'receiver', 'duration', 'audio_file', 'timestamp']
     list_filter = ['sender']
     
     class Meta:
-        models = AudioMessage
+        model = AudioMessage
         
 class ImageAdmin(admin.ModelAdmin):
-    list_display = ['sender', 'receiver', 'images', 'timestamp']
+    list_display = ['sender', 'receiver', 'semantic_autocomplete', 'timestamp']
     list_filter = ['sender', 'receiver']
+    readonly_fields = ('semantic_autocomplete',)
     
     class Meta:
-        models = ImageMessage
+        model = ImageMessage
         
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ['sender', 'receiver', 'message', 'read', 'timestamp']
     list_filter = ['sender', 'receiver']
     
     class Meta:
-        models = MessageNotification
+        model = MessageNotification
         
      
 admin.site.register(Messages, MessageAdmin)

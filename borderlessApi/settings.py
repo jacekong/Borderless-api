@@ -23,6 +23,8 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'daphne',
+    "semantic_admin",
+    "semantic_forms",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,7 +41,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'channels',
     'channels_redis',
-    # 'users.apps.UsersConfig'
+    'compressor',
+    'django_filters',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -57,6 +60,15 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 
 ]
+
+# SEMANTIC_APP_LIST = [
+#     { 
+#      "Post": "api",
+#     }, 
+#     { "Chat": "chat" }, 
+#     { "Friend": "friend"}, 
+#     { "Users": "users"}
+# ]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
@@ -129,7 +141,7 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -206,11 +218,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+# pd
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/') 
 
 # media path
 MEDIA_URL = 'media/'
+# pd
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+COMPRESS_ROOT = os.path.join(BASE_DIR, 'static/') 
+ 
+COMPRESS_ENABLED = True
+ 
+STATICFILES_FINDERS = (
+    'compressor.finders.CompressorFinder',
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder'
+)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -226,3 +250,13 @@ DJANGORESIZED_DEFAULT_KEEP_META = True
 DJANGORESIZED_DEFAULT_FORCE_FORMAT = 'JPEG'
 DJANGORESIZED_DEFAULT_FORMAT_EXTENSIONS = {'JPEG': ".jpg"}
 DJANGORESIZED_DEFAULT_NORMALIZE_ROTATION = True
+
+# login web
+AUTO_LOGOUT = {
+    'SESSION_TIME': timedelta(minutes=60),
+    'REDIRECT_TO_LOGIN_IMMEDIATELY': True,
+    'MESSAGE': 'The session has expired. Please login again to continue.',
+}
+
+LOGIN_URL = 'web/accounts/login/'
+LOGOUT_REDIRECT_URL = "login"

@@ -2,6 +2,7 @@ from django.db import models
 import uuid
 from django.conf import settings
 from django_resized import ResizedImageField
+from django.utils.html import format_html
 
 
 # post model
@@ -14,7 +15,10 @@ class Post(models.Model):
     modified_date = models.DateTimeField(auto_now=True, editable=False)
     
     def __str__(self) -> str:
-        return f'{self.author.username}\'s posts'
+        return f'{self.author.username}\'s post, posted on {self.created_date.strftime("%Y-%m-%d")}'
+    
+    class Meta:
+        ordering = ('created_date',)
 
 # image model
 class PostImages(models.Model):
@@ -25,6 +29,15 @@ class PostImages(models.Model):
     def __str__(self) -> str:
         return f'{self.post.author.username} images'
     
+    @property
+    def semantic_autocomplete(self):
+        if self.images:
+            return format_html('<img src="{}" width="100" height="100" />'.format(self.images.url))
+        return "No Image"
+
+    semantic_autocomplete.fget.short_description = 'Image'
+        
+    
 # video model
 class PostVideos(models.Model):
     video_id      = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, primary_key=True)
@@ -33,11 +46,25 @@ class PostVideos(models.Model):
     post          = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_video')
     
     def __str__(self) -> str:
-        return f'{self.post.author.username} videos'
+        return f'{self.post.author.username} video, posted on {self.date_uploaded.strftime("%Y-%m-%d")}'
+    
+    @property
+    def semantic_autocomplete(self):
+        if self.video:
+            return format_html('<video src="{}" width="100" height="100" />'.format(self.video.url))
+        return "No video"
+
+    semantic_autocomplete.fget.short_description = 'Video'
     
 class PostComments(models.Model):
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     comment = models.TextField()
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_comments')
     timestamp = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ('timestamp',)
+        
+    def __str__(self) -> str:
+        return f'- {self.sender.username} -'
 

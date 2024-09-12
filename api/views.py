@@ -12,7 +12,7 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Q
 
-    
+# api 
 # get posts and create post
 class PostsAPIView(APIView):
     parser_classes = [FormParser, MultiPartParser]
@@ -131,34 +131,38 @@ class LogoutView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetRoutesView(APIView):
-    permission_classes = [IsAuthenticated]
-    def get(self, rquest):
-        routes = [
-            {
-                'user register': '/user/register'
-            },
-            {
-                'update user': '/user/update/id'
-            },
-            {
-                'get / create posts': '/api/posts'
-            },
-            {
-                'single post': '/api/posts/id'
-            },
-            {
-                "logged in user posts": 'api/posts/login/user'
-            },
-            {
-                'get token / login': '/api/token/'
-            },
-            {
-                'refresh token': '/api/token/refresh/'
-            },
-            {
-                'logout': '/logout/'
-            }
-        ]
+
+# web
+from django.views import View
+from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+
+class Index(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        friends_list = FriendList.objects.filter(user=user)
+        if friends_list.exists():
+            friend_ids = friends_list.values_list('friends', flat=True)
+            posts = Post.objects.prefetch_related('post_images').filter(Q(author=user) | Q(author__id__in=friend_ids)).order_by('-created_date')
+            
+            context = {"posts": posts}
+            return render(request, 'home/index.html', context)
         
-        return Response(routes, status=status.HTTP_200_OK)
+class WebGetPostComments(LoginRequiredMixin, View):
+    # get comments
+    def get(self, request, post_id):
+        user  = request.user
+        post_comments = get_object_or_404(PostComments, post=post_id)
+        
+        return JsonResponse(post_comments)
+    
+class AccountPage(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        if user.is_authenticated:
+            posts = Post.objects.prefetch_related('post_images').filter(author=user).order_by('-created_date')
+            context = {"posts": posts}
+            return render(request, 'account/account.html', context=context)
+        else:
+            return Response({'messages': 'user is not authenticated'})      

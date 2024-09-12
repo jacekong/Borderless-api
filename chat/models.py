@@ -3,8 +3,7 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_resized import ResizedImageField
-from channels.layers import get_channel_layer
-from asgiref.sync import async_to_sync
+from django.utils.html import format_html
 
 class Messages(models.Model):
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='sent_messages', on_delete=models.CASCADE,)
@@ -27,6 +26,14 @@ class ImageMessage(models.Model):
     receiver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='received_image')
     images   = ResizedImageField(upload_to='image_messages/', size=[2680, None])
     timestamp = models.DateTimeField(auto_now_add=True)
+    
+    @property
+    def semantic_autocomplete(self):
+        if self.images:
+            return format_html('<img src="{}" width="100" height="100" />'.format(self.images.url))
+        return "No Image"
+
+    semantic_autocomplete.fget.short_description = 'Image'
      
 class ChatList(models.Model):
     user1 = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='chats_as_user1', on_delete=models.CASCADE)

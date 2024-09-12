@@ -1,0 +1,117 @@
+{% extends "components/_base.html" %}
+
+{% if user.is_authenticated %}
+
+{% block title %}
+Messages
+{% endblock title %}
+
+{% block content %}
+
+<div class="mt-16"></div>
+
+<div class="container sm:flex w-full">
+    <!-- Contact List -->
+    <div class="h-700 overflow-y-auto p-3 w-full sm:w-96">
+        {% for contact in chat_list %}
+        <a class="contact-item flex items-center mb-4 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-500 p-2 rounded-md" data-user-id="{{ contact.user2.user_id }}">
+          <div class="w-12 h-12 bg-gray-300 rounded-full mr-3">
+            <img src="{{contact.user2.avatar.url}}" alt="User Avatar" class="w-12 h-12 rounded-full">
+          </div>
+          <div class="">
+            <h2 class="text-lg font-semibold dark:text-white">{{contact.user2.username}}</h2>
+            {% for msg in contact_latest_messages %}
+            <p class="text-gray-600">{{msg.latest_message.message}}</p>
+            {% endfor %}
+          </div>
+        </a>
+        {% endfor %}
+    </div>
+
+    {% include "chat/chat_area.html" %}
+</div>
+
+
+{% endblock content %}
+
+{% block script %}
+
+<script>
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const contacts = document.querySelectorAll('.contact-item');
+    const chatContainer = document.getElementById('chat-container');
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const sendButton = document.getElementById('send-button');
+    let chatSocket;
+
+    contacts.forEach(contact => {
+        contact.addEventListener('click', function () {
+
+            contacts.forEach(c => c.classList.remove('highlighted'));
+            contact.classList.add('highlighted');
+            // Show the chat container
+            chatContainer.classList.remove('hidden');
+            chatContainer.classList.add('sm:flex');
+
+            // If in mobile view, hide the contact list
+            if (window.innerWidth < 640) {
+                contact.parentElement.classList.add('hidden');
+            }
+
+            // Load the chat messages dynamically (placeholder code)
+            const userId = contact.getAttribute('data-user-id');
+
+            // Close previous WebSocket connection if exists
+            if (chatSocket) {
+                chatSocket.close();
+            }
+
+            const roomName = userId; 
+            chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${userId}/`);
+
+            chatSocket.onmessage = function(e) {
+                const data = JSON.parse(e.data);
+                chatMessages.innerHTML += `<div class="flex mb-4">
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
+                        <img src="${user.avatar.url}" alt="User Avatar" class="w-8 h-8 rounded-full">
+                    </div>
+                    <div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
+                        <p class="text-gray-700">${data.message}</p>
+                    </div>
+                </div>`;
+            };
+
+            chatSocket.onclose = function(e) {
+                console.error('Chat socket closed unexpectedly');
+            };
+        });
+    });
+
+    sendButton.addEventListener('click', function () {
+        const message = chatInput.value;
+        if (message && chatSocket) {
+            chatSocket.send(JSON.stringify({
+                'message': message
+            }));
+            chatMessages.innerHTML += `<div class="flex justify-end mb-4">
+                <div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
+                    <p>${message}</p>
+                </div>
+                <div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
+                    <img src="{{user.avatar.url}}" alt="My Avatar" class="w-8 h-8 rounded-full">
+                </div>
+            </div>`;
+            chatInput.value = '';
+        }
+    });
+});
+
+
+   
+</script>
+
+{% endblock script %}
+
+{% endif %}

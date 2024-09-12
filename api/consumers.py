@@ -3,6 +3,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
 from api.models import Post, PostComments
 from users.models import CustomUser
+import datetime
+from django.utils.timezone import now
 
 class CommentConsumer(AsyncWebsocketConsumer):
     
@@ -29,6 +31,8 @@ class CommentConsumer(AsyncWebsocketConsumer):
 
         sender = self.scope['user'].user_id
         
+        comment_sender = self.scope['user']
+        
         post = self.scope['url_route']['kwargs']['post_id']
         
         await self.save_comment(sender, post, comment)
@@ -38,14 +42,23 @@ class CommentConsumer(AsyncWebsocketConsumer):
             {
                 'type':'post_comment',
                 'comment': comment,
+                'sender': comment_sender.username,
+                'sender_avatar': comment_sender.avatar.url,
+                'timestamp': now().isoformat(),
             }
         )
     
     async def post_comment(self, event):
         comment = event['comment']
+        sender = event['sender']
+        sender_avatar = event['sender_avatar']
+        timestamp = event['timestamp']
 
         await self.send(text_data=json.dumps({
             'comment': comment,
+            'sender': sender,
+            'sender_avatar': sender_avatar,
+            'timestamp': timestamp,
         }))
         
     @sync_to_async

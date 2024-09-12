@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from chat.consumers import ChatConsumer
 from users.models import CustomUser
@@ -14,23 +15,22 @@ from rest_framework.decorators import api_view, permission_classes
 class GetChatHistoryAPIView(APIView):
     permission_classes = [IsAuthenticated]
     
-    def get(self, request, *args, **kwargs):
-        sender = request.user
-
-        receiver = kwargs.get('user_id')
-        receiver = CustomUser.objects.get(user_id=receiver)
-        
-        # get text messages
+    def get_chat_history(self, sender, receiver):
+        # Get text messages
         chat_message_sent = Messages.objects.filter(sender=sender, receiver=receiver)
         chat_message_receive = Messages.objects.filter(sender=receiver, receiver=sender)
         
-        
-        chat_history = chat_message_sent.union(chat_message_receive)
         # Combine all messages into a single queryset
+        chat_history = chat_message_sent.union(chat_message_receive).order_by('timestamp')
         
-        # Sort the chat history by timestamp
-        # chat_history.sort(key=lambda x: x.timestamp)
+        return chat_history
+    
+    def get(self, request, *args, **kwargs):
+        sender = request.user
+        receiver_id = kwargs.get('user_id')
+        receiver = get_object_or_404(CustomUser, user_id=receiver_id)
         
+        chat_history = self.get_chat_history(sender, receiver)
         serializer = MessageSerializer(chat_history, many=True, context={'request': request})
         
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -86,11 +86,27 @@ class ChatListAPIView(APIView):
     
     def get(self, request, *args, **kwargs):
         logged_in_user = request.user
-
-        chat_lists = ChatList.objects.filter(user1=logged_in_user)
-        serializer = ChatListSerializer(chat_lists, many=True, context={'request': request})
         
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # Get chat history for all chat list entries
+        chat_lists = ChatList.objects.filter(user1=logged_in_user)
+        chat_list_serializer = ChatListSerializer(chat_lists, many=True, context={'request': request})
+        
+        chat_history_data = []
+        chat_history_view = GetChatHistoryAPIView()
+        
+        for chat in chat_lists:
+            other_user = chat.user2 
+            chat_history = chat_history_view.get_chat_history(logged_in_user, other_user)
+            chat_history_serializer = MessageSerializer(chat_history, many=True, context={'request': request})
+            chat_history_data.append({
+                'chat_list': ChatListSerializer(chat, context={'request': request}).data,
+                'chat_history': chat_history_serializer.data
+            })
+        
+        return Response({
+            'chat_lists': chat_list_serializer.data,
+            'chat_histories': chat_history_data
+        }, status=status.HTTP_200_OK)
     
 class ImageMessageCreateAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -163,6 +179,95 @@ def get_notification(request):
     serilizaer =  NotificationSerializer(noti, many=True)
     
     return Response(serilizaer.data, status=status.HTTP_200_OK)
+
+
+
+# web
+from django.views import View
+from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class ChatHistoryWeb(LoginRequiredMixin, View):
+    
+    def get_chat_history(self, sender, receiver):
+        # Get text messages
+        chat_message_sent = Messages.objects.filter(sender=sender, receiver=receiver)
+        chat_message_receive = Messages.objects.filter(sender=receiver, receiver=sender)
+        
+        # Combine all messages into a single queryset
+        chat_history = chat_message_sent.union(chat_message_receive).order_by('timestamp')
+        
+        return chat_history
+    
+    def get(self, request, *args, **kwargs):
+        sender = request.user
+        receiver_id = kwargs.get('user_id')
+        receiver = get_object_or_404(CustomUser, user_id=receiver_id)
+        
+        chat_history = self.get_chat_history(sender, receiver)
+        
+        context = {
+            'sender': sender,
+            'receiver': receiver,
+            'chat_history': chat_history,
+        }
+        
+        return render(request, 'your_template_name.html', context=context)
+
+class ChatWebPage(LoginRequiredMixin, View):
+    
+    template_name = 'chat/chat.html'
+    
+    def get(self, request, *args, **kwargs):
+        logged_in_user = request.user
+        
+        # Get all chat list entries for the logged-in user
+        chat_lists = ChatList.objects.filter(user1=logged_in_user)
+        
+        # Prepare a list to hold each contact along with their latest message
+        contact_latest_messages = []
+        chat_history_view = ChatHistoryWeb()
+        
+        for chat in chat_lists:
+            other_user = chat.user2
+            chat_history = chat_history_view.get_chat_history(logged_in_user, other_user)
+            
+            # Get the latest message (if any) from the chat history
+            latest_message = chat_history.first() if chat_history.exists() else None
+            
+            contact_latest_messages.append({
+                'contact': other_user,
+                'latest_message': latest_message
+            })
+        
+        context = {
+            'chat_list': chat_lists,
+            'contact_latest_messages': contact_latest_messages
+        }
+        
+        return render(request, self.template_name, context=context)
+    
+class ChatAreaWebView(LoginRequiredMixin, View):
+    template_name = 'chat/chat_area.html'
+    
+    def get(self, request, *args, **kwargs):
+        login_user = request.user
+        chat_user = kwargs.get('user_id')
+        
+        print(chat_user)
+        
+        chat_history_view = ChatHistoryWeb()
+        chat_history = chat_history_view.get_chat_history(login_user, chat_user)
+        
+        
+        context = {
+            'chat_history': chat_history
+        }
+        
+        return render(request, self.template_name, context=context)
+        
+        
+        
     
         
         

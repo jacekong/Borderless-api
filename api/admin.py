@@ -1,29 +1,51 @@
-from django.contrib import admin
-from api.models import Post,PostImages,PostVideos, PostComments
 
-class PostAdmin(admin.ModelAdmin):
-    list_display = ['post_id','author', 'post_content', 'created_date']
+from api.models import Post,PostImages,PostVideos, PostComments
+from semantic_forms.filters import SemanticFilterSet
+from django.contrib import admin
+from django.contrib.admin import ModelAdmin
+
+
+class PostFilter(SemanticFilterSet):
+    class Meta:
+        model = Post
+        fields = ("author", 'created_date')
+        
+class PostAdmin(ModelAdmin):
+    list_display = ['author', 'post_content', 'created_date']
     list_filter = ['author', 'created_date']
+    filterset_class = PostFilter
+
     
     class Meta:
-        models = Post
+        model = Post
         
-class PostImageAdmin(admin.ModelAdmin):
-    list_display = ['images', 'post']
+class PostImageAdmin(ModelAdmin):
+    list_display = ['post', 'semantic_autocomplete']
     list_filter = ['post']
     
+    readonly_fields = ('semantic_autocomplete',)
+    
     class Meta:
-        models = PostImages
+        model = PostImages
         
-class PostCommentsAdmin(admin.ModelAdmin):
+class PostCommentsAdmin(ModelAdmin):
     list_display = ['sender', 'comment', 'post', 'timestamp']
     list_filter = ['sender', 'post']
     
     class Meta:
-        models = PostComments
+        model = PostComments
+        
+class PostVideoAdmin(admin.ModelAdmin):
+    list_display = ['post', 'semantic_autocomplete', 'date_uploaded']
+    list_filter = ['post']
+    
+    readonly_fields = ('semantic_autocomplete',)
+    
+    class Meta:
+        model = PostVideos
 
 admin.site.register(Post, PostAdmin)
 admin.site.register(PostImages, PostImageAdmin)
-admin.site.register(PostVideos)
+admin.site.register(PostVideos, PostVideoAdmin)
 admin.site.register(PostComments, PostCommentsAdmin)
 

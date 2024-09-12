@@ -148,3 +148,42 @@ class UserFriendsRequestList(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except FriendRequest.DoesNotExist:
             return Response({'error': 'No friends request yet'} ,status=status.HTTP_404_NOT_FOUND)
+        
+# web
+from django.views import View
+from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class WebSendFriendRequest(LoginRequiredMixin, View):
+    
+    def post(self, request, *args, **kwargs):
+        # get sender user
+        sender = request.user
+        # get receiver id
+        receiver_id = request.data.get('receiver')
+        # get receiver user info
+        receiver = get_object_or_404(CustomUser ,user_id=receiver_id)
+        
+        try:
+            # Check if a friend request already exists or if the users are already friends
+            existing_request = FriendRequest.objects.filter(sender=sender, receiver=receiver, is_active=True).first()
+            existing_friend = FriendList.objects.filter(user=sender, friends=receiver).exists()
+        except FriendList.DoesNotExist:
+            existing_friend = False
+
+        if existing_friend:
+            return Response({'error': 'You are already friends!'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if existing_request:
+            return Response({'error': 'Friend request already sent.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # check if the sender and receiver are the same user
+        if sender.id == receiver.id:
+            return Response({'error': 'Cannot send request to yourself!'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        friend_request = FriendRequest(sender=sender, receiver=receiver)
+        friend_request.save()
+        
+        return Response({'message': 'Friend request send successfully.'}, status=status.HTTP_201_CREATED)
+    
+    
