@@ -9,6 +9,7 @@ module.exports = {
   theme: {
     extend: {
       width: {
+        '200': '200px',
         '500': '500px',
         '700': '700px',
         '900': '900px',

@@ -16,41 +16,27 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="{% static 'js/theme.js' %}"></script>
 </head>
-<body class="bg-green-50 dark:bg-gray-900">
-
-  {% if messages %}
-  
-    {% for message in messages  %}
-      <div class="flex items-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
-        <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-        </svg>
-        <span class="sr-only">Info</span>
-        <div>
-          <span class="font-medium">帳戶或密碼不正確喔！</span>{{ message }}
-        </div>
-      </div>
-    {% endfor %}
-  {% endif %}
+<body class="bg-gray-50 dark:bg-gray-900">
 
   {% include "components/navbar.html" %}
-  <div class="sm:grid sm:grid-cols-[16rem_1fr] h-screen">
+  <div id="home_container" class="sm:grid sm:grid-cols-[7rem_1fr]">
     {% include "components/aside.html" %}
-    <main class="sm:col-start-2 bg-gray-900 mx-auto">
+    <main class="sm:col-start-2 bg-white dark:bg-gray-900 sm:ml-60 mx-auto">
       {% block content %}
       {% endblock content %}
     </main>
   </div>
-  {% comment %} <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-500 lg:my-8" />
-  <div class="container mx-auto flex justify-center items-center w-full">
-      <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400 my-7">© 2024 <a href="#" class="hover:underline">made by Jace</a>. All Rights Reserved.</span>
-  </div> {% endcomment %}
 
-    
-    <script src="{% static 'js/app.js' %}"></script>
-    {% block script %}{% endblock script %}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
-    
+  <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-500 lg:my-8" />
+  <div class="container mx-auto flex justify-center items-center w-full">
+      <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400 my-7">© 2024 | Borderless <a href="#" class="hover:underline text-gray-500 dark:text-gray-100">made by Jace</a>. All Rights Reserved.</span>
+  </div>
+
+  <script src="{% static 'js/app.js' %}"></script>
+  <script src="{% static 'js/image_slider.js' %}"></script>
+  {% block script %}{% endblock script %}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+  
 </body>
 </html>

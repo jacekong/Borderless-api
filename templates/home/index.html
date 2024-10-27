@@ -1,4 +1,3 @@
-
 {% extends 'components/_base.html' %}
 
 {% if user.is_authenticated %}
@@ -11,32 +10,48 @@
 {% endblock %} 
 
 {% block content %}
-  <div class="mt-16">
-  </div>
+<div class="flex mt-16">
 
-  {% for post in posts  %}
-    <div class="px-4 py-2 bg-white sm:w-500 dark:bg-gray-700">
-      <div class="rounded-lg dark:border-gray-700">
-        <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-          <div class="p-3">
-            <!-- username avatar -->
-            <div class="flex justify-start items-center">
-                <a href="#" class="cursor-pointer">
-                  <img src="{{post.author.avatar.url}}" alt="" class="h-10 w-10 rounded-full bg-gray-50">
-                </a>
-                <div class="username text-black ml-3 flex flex-col">
-                  <span class="text-md dark:text-white">{{post.author.username}}</span>
-                  <span class="text-gray-400 text-sm dark:text-gray-500">{{post.created_date|timesince}}</span>
-                </div>
+  <!-- Main content area -->
+  <div class="flex-grow px-4 sm:px-6 lg:px-8 max-w-3xl mx-auto">
+    <!-- Create post section -->
+    <div class="mb-6 w-full">
+      {% include "posts/create_post.html" %}
+    </div>
+
+    <!-- Posts feed -->
+    <div class="space-y-6">
+      {% for post in posts %}
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow">
+          <div class="p-4">
+            <!-- Post header -->
+            <div class="flex items-center mb-4">
+              <img src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}" class="w-10 h-10 rounded-full mr-3">
+              <div>
+                <p class="font-semibold text-gray-900 dark:text-white">{{ post.author.username }}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">{{ post.created_date|timesince }} ago</p>
+              </div>
             </div>
 
-            <!-- image slider -->
+            <!-- Post content -->
+            <p class="text-gray-800 dark:text-gray-200 mb-4">{{ post.post_content }}</p>
+
+            <!-- Post images -->
+            {% comment %} {% if post.post_images.all %}
+              <div class="mb-4">
+                {% if post.post_images.all|length == 1 %}
+                  <img src="{{ post.post_images.first.images.url }}" alt="Post image" class="max-w-full h-auto max-h-96 object-cover rounded-lg mx-auto">
+                {% else %}
+                  <!-- Image slider (keep your existing slider code here) -->
+                {% endif %}
+              </div>
+            {% endif %} {% endcomment %}
             {% if post.post_images.all|length > 1 %}
               <div class="image mt-3">
                 <section class="slideshow-container">
                   {% for image in post.post_images.all %}
                       <div class="mySlides">
-                          <img src="{{ image.images.url }}" style="width:100%">
+                          <img src="{{ image.images.url }}" style="width:50%">
                       </div>
                   {% endfor %}
           
@@ -53,7 +68,7 @@
               {% elif post.post_images.all|length  == 1 %}
                 {% for image in post.post_images.all %}
                     <div class="mt-3">
-                        <img src="{{ image.images.url }}" style="width:100%">
+                        <img src="{{ image.images.url }}" style="width:50%">
                     </div>
                 {% endfor %}
               {% else %}
@@ -61,83 +76,35 @@
 
             {% endif %}
 
-            <!-- post content -->
-            <div class="content mt-7">
-              <p class="text-black dark:text-white">
-                {{post.post_content}}
-              </p>
+            <!-- Post actions -->
+            <div class="flex items-center space-x-4">
+              <button class="flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                Like
+              </button>
+              <button class="flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400" data-modal-target="modal-{{ post.post_id }}" data-modal-toggle="modal-{{ post.post_id }}">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                Comment
+              </button>
+              <button class="flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path></svg>
+                Share
+              </button>
             </div>
-            <!-- comment -->
-            <div class="comment mt-5 flex items-center">
-                  <button type="button" data-modal-target="modal-{{ post.post_id }}" data-modal-toggle="modal-{{ post.post_id }}" data-post-id="{{ post.post_id }}" class="block text-white  focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-1">
-                    <svg class="dark:text-gray-400 cursor-pointer" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24" color="#000000"><defs><style>.cls-637642e7c3a86d32eae6f18f-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><path class="cls-637642e7c3a86d32eae6f18f-1" d="M1.5,5.3v9.54a3.82,3.82,0,0,0,3.82,3.82H7.23v2.86L13,18.66h5.73a3.82,3.82,0,0,0,3.82-3.82V5.3a3.82,3.82,0,0,0-3.82-3.82H5.32A3.82,3.82,0,0,0,1.5,5.3Z"></path><line class="cls-637642e7c3a86d32eae6f18f-1" x1="15.82" y1="10.07" x2="17.73" y2="10.07"></line><line class="cls-637642e7c3a86d32eae6f18f-1" x1="11.05" y1="10.07" x2="12.95" y2="10.07"></line><line class="cls-637642e7c3a86d32eae6f18f-1" x1="6.27" y1="10.07" x2="8.18" y2="10.07"></line></svg>
-                    </button>
-                
-                {% if post.post_comments.all|length > 0 %}
-                  <span id="comment-count-{{post.post_id}}" class="ml-3 text-gray-400">{{post.post_comments.count}}</span>
-                {% endif %}
-            </div>
-
-            <!-- Main modal -->
-            <div id="modal-{{ post.post_id }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-              <div class="relative p-4 w-full max-w-md max-h-full">
-                  <!-- Modal content -->
-                  <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                      <!-- Modal header -->
-                      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                          <h3 class="text-md font-semibold text-gray-900 dark:text-white">
-                              Comment on {{post}}
-                          </h3>
-                          <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm h-8 w-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="modal-{{ post.post_id }}">
-                              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                              </svg>
-                              <span class="sr-only">Close modal</span>
-                          </button>
-                      </div>
-                      <div class="bg-white dark:bg-gray-800 shadow-lg">
-                          <div class="w-full border border-gray-200 bg-gray-50 dark:bg-gray-700 dark:border-gray-600">
-                              <div class="px-4 py-2 bg-white rounded-t-lg dark:bg-gray-800">
-                                  <label for="comment" class="sr-only">Your comment</label>
-                                  <textarea id="comment-{{ post.post_id }}" rows="1" class="w-full px-0 text-sm text-gray-900 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400" placeholder="Write a comment..." required ></textarea>
-                              </div>
-                              <div class="flex items-center justify-between px-3 py-2 border-t dark:border-gray-600">
-                                  <button type="button" onclick="sendComment('{{ post.post_id }}');" class="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
-                                      Post comment
-                                  </button>
-                                  </div>
-                              </div>
-                          </div>
-                        </form>
-                      <!-- Modal body -->
-                      <div class="p-4 md:p-5 max-h-96 overflow-y-auto bg-white dark:bg-gray-700 rounded-b-lg">
-                          <ul class="space-y-3 text-black dark:text-white" id="comments-{{ post.post_id }}">
-                            {% for comment in post.post_comments.all|sort_comments %}
-                              <li>
-                                <div class="flex justify-between">
-                                  <div class="flex justify-start items-start">
-                                    <img class="w-8 h-8 rounded-full mr-3" src="{{comment.sender.avatar.url}}" />
-                                    <div>
-                                      <span class="font-semibold text-sm">{{comment.sender.username}}</span>
-                                      <p class="text-gray-700 dark:text-gray-300 text-xs">{{comment.comment}}</p>
-                                    </div>
-                                  </div>
-                                  <span class="text-2xs text-gray-400">{{comment.timestamp|timesince}}</span>
-                                </div>
-                              </li>
-                            {% endfor %}
-                          </ul>
-                      </div>
-                  </div>
-              </div>
-            </div>
-  
           </div>
+
+          <!-- Comments modal (keep your existing modal code here) -->
+          {% include "components/comment_modal.html" with post=post %}
         </div>
-      </div>
+      {% endfor %}
     </div>
-  {% endfor %}
-          
+  </div>
+
+  <!-- Right sidebar for search friend -->
+  <div class="hidden lg:block w-96 fixed right-12">
+    {% include "components/_search_friend.html" %}
+  </div>
+</div>
 {% endblock content %}
 
 {% block script %}

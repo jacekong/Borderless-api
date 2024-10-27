@@ -1,14 +1,4 @@
-{% extends "components/_base.html" %}
-{% load static %}
-
-{% if user.is_authenticated %}
-
-{% block title %}
-Search firends
-{% endblock title %}
-
-{% block content %}
-<div class="container mx-auto mt-16 px-4">
+<div class="container px-4">
     <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         <div class="p-6">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Search Friends</h1>
@@ -54,6 +44,3 @@ Search firends
         </div>
     </div>
 </div>
-{% endblock content %}
-
-{% endif %}

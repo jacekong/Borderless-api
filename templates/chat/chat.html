@@ -7,31 +7,30 @@ Messages
 {% endblock title %}
 
 {% block content %}
-
-<div class="mt-16"></div>
-
-<div class="container sm:flex w-full">
-    <!-- Contact List -->
-    <div class="h-700 overflow-y-auto p-3 w-full sm:w-96">
-        {% for contact in chat_list %}
-        <a class="contact-item flex items-center mb-4 cursor-pointer hover:bg-gray-300 dark:hover:bg-gray-500 p-2 rounded-md" data-user-id="{{ contact.user2.user_id }}">
-          <div class="w-12 h-12 bg-gray-300 rounded-full mr-3">
-            <img src="{{contact.user2.avatar.url}}" alt="User Avatar" class="w-12 h-12 rounded-full">
-          </div>
-          <div class="">
-            <h2 class="text-lg font-semibold dark:text-white">{{contact.user2.username}}</h2>
-            {% for msg in contact_latest_messages %}
-            <p class="text-gray-600">{{msg.latest_message.message}}</p>
+<div class="flex h-screen bg-gray-100">
+    <!-- Contact List (Left Column) -->
+    <div class="w-1/4 bg-white border-r border-gray-300 overflow-y-auto">
+        <div class="p-4 border-b border-gray-300">
+            <h2 class="text-xl font-semibold text-gray-800">Chats</h2>
+        </div>
+        <div id="contact-list" class="divide-y divide-gray-200">
+            {% for contact in chat_list %}
+            <a class="contact-item flex items-center p-3 hover:bg-gray-100 cursor-pointer" data-user-id="{{ contact.user2.user_id }}">
+                <img src="{{contact.user2.avatar.url}}" alt="User Avatar" class="w-12 h-12 rounded-full mr-3">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-800">{{contact.user2.username}}</h3>
+                    <p class="text-xs text-gray-600 truncate">{{contact.latest_message.message|default:"No messages yet"}}</p>
+                </div>
+            </a>
             {% endfor %}
-          </div>
-        </a>
-        {% endfor %}
+        </div>
     </div>
 
-    {% include "chat/chat_area.html" %}
+    <!-- Chat Area (Right Column) -->
+    <div id="chat-area" class="w-3/4 flex flex-col">
+        {% include "chat/chat_area.html" %}
+    </div>
 </div>
-
-
 {% endblock content %}
 
 {% block script %}
@@ -44,72 +43,92 @@ Messages
     const chatMessages = document.getElementById('chat-messages');
     const chatInput = document.getElementById('chat-input');
     const sendButton = document.getElementById('send-button');
+    const contactList = document.getElementById('contact-list');
+    const chatArea = document.getElementById('chat-area');
     let chatSocket;
+
+    function toggleMobileView() {
+        if (window.innerWidth < 640) {
+            if (chatArea.classList.contains('hidden')) {
+                contactList.classList.add('hidden');
+                chatArea.classList.remove('hidden');
+            } else {
+                contactList.classList.remove('hidden');
+                chatArea.classList.add('hidden');
+            }
+        } else {
+            contactList.classList.remove('hidden');
+            chatArea.classList.remove('hidden');
+        }
+    }
 
     contacts.forEach(contact => {
         contact.addEventListener('click', function () {
+            contacts.forEach(c => c.classList.remove('bg-gray-200', 'dark:bg-gray-600'));
+            contact.classList.add('bg-gray-200', 'dark:bg-gray-600');
+            
+            toggleMobileView();
 
-            contacts.forEach(c => c.classList.remove('highlighted'));
-            contact.classList.add('highlighted');
-            // Show the chat container
-            chatContainer.classList.remove('hidden');
-            chatContainer.classList.add('sm:flex');
-
-            // If in mobile view, hide the contact list
-            if (window.innerWidth < 640) {
-                contact.parentElement.classList.add('hidden');
-            }
-
-            // Load the chat messages dynamically (placeholder code)
+            // Load the chat messages dynamically
             const userId = contact.getAttribute('data-user-id');
 
-            // Close previous WebSocket connection if exists
             if (chatSocket) {
                 chatSocket.close();
             }
 
-            const roomName = userId; 
             chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${userId}/`);
 
             chatSocket.onmessage = function(e) {
                 const data = JSON.parse(e.data);
-                chatMessages.innerHTML += `<div class="flex mb-4">
-                    <div class="w-9 h-9 rounded-full flex items-center justify-center mr-2">
-                        <img src="${user.avatar.url}" alt="User Avatar" class="w-8 h-8 rounded-full">
-                    </div>
-                    <div class="flex max-w-96 bg-white rounded-lg p-3 gap-3">
-                        <p class="text-gray-700">${data.message}</p>
-                    </div>
-                </div>`;
+                appendMessage(data.message, 'received');
             };
 
             chatSocket.onclose = function(e) {
                 console.error('Chat socket closed unexpectedly');
             };
+
+            // Clear previous messages
+            chatMessages.innerHTML = '';
         });
     });
 
-    sendButton.addEventListener('click', function () {
-        const message = chatInput.value;
+    function appendMessage(message, type) {
+        const messageElement = document.createElement('div');
+        messageElement.className = type === 'sent' ? 'flex justify-end' : 'flex';
+        messageElement.innerHTML = `
+            <div class="flex items-end ${type === 'sent' ? 'flex-row-reverse' : ''}">
+                <div class="flex flex-col space-y-2 text-xs max-w-xs mx-2 ${type === 'sent' ? 'items-end' : 'items-start'}">
+                    <div><span class="px-4 py-2 rounded-lg inline-block ${type === 'sent' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-600'}">${message}</span></div>
+                </div>
+                <img src="${type === 'sent' ? '{{user.avatar.url}}' : '{{contact.user2.avatar.url}}'}" alt="Avatar" class="w-6 h-6 rounded-full">
+            </div>
+        `;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    sendButton.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    function sendMessage() {
+        e.preventDefault();
+        const message = chatInput.value.trim();
         if (message && chatSocket) {
             chatSocket.send(JSON.stringify({
                 'message': message
             }));
-            chatMessages.innerHTML += `<div class="flex justify-end mb-4">
-                <div class="flex max-w-96 bg-indigo-500 text-white rounded-lg p-3 gap-3">
-                    <p>${message}</p>
-                </div>
-                <div class="w-9 h-9 rounded-full flex items-center justify-center ml-2">
-                    <img src="{{user.avatar.url}}" alt="My Avatar" class="w-8 h-8 rounded-full">
-                </div>
-            </div>`;
+            appendMessage(message, 'sent');
             chatInput.value = '';
         }
-    });
+    }
+
+    window.addEventListener('resize', toggleMobileView);
 });
 
-
-   
 </script>
 
 {% endblock script %}

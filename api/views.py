@@ -166,7 +166,7 @@ class WebGetPostComments(LoginRequiredMixin, View):
 class AccountPage(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
-
+        
         posts = Post.objects.prefetch_related('post_images').filter(author=user).order_by('-created_date')
         context = {"posts": posts}
         

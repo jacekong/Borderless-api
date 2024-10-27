@@ -1,0 +1,37 @@
+{% include "components/_base.html" %}
+
+{% block title %}
+Friends List
+{% endblock %}
+
+{% block content %}
+
+<script>
+  import { Avatar, Button } from 'flowbite-svelte';
+
+  // Assume you have a list of friends
+  const friends = [
+    { id: 1, name: 'John Doe', avatar: '/images/profile-picture-1.webp' },
+    { id: 2, name: 'Jane Smith', avatar: '/images/profile-picture-2.webp' },
+    // ... more friends
+  ];
+
+  function sendMessage(friendId) {
+    // Implement your message sending logic here
+    console.log(`Sending message to friend ${friendId}`);
+  }
+</script>
+
+<div class="space-y-4">
+  {#each friends as friend}
+    <div class="flex items-center space-x-4 rtl:space-x-reverse bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+      <Avatar src={friend.avatar} alt={friend.name} />
+      <div class="flex-1">
+        <p class="text-lg font-semibold text-gray-900 dark:text-white">{friend.name}</p>
+      </div>
+      <Button size="sm" on:click={() => sendMessage(friend.id)}>Send Message</Button>
+    </div>
+  {/each}
+</div>
+
+{% endblock %}
