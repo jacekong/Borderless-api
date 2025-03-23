@@ -11,7 +11,7 @@ class PostFilter(SemanticFilterSet):
         fields = ("author", 'created_date')
         
 class PostAdmin(ModelAdmin):
-    list_display = ['author', 'post_content', 'created_date']
+    list_display = ['post_id', 'author', 'post_content', 'created_date']
     list_filter = ['author', 'created_date']
     filterset_class = PostFilter
 
@@ -29,7 +29,7 @@ class PostImageAdmin(ModelAdmin):
         model = PostImages
         
 class PostCommentsAdmin(ModelAdmin):
-    list_display = ['sender', 'comment', 'post', 'timestamp']
+    list_display = ['id', 'sender', 'comment', 'post', 'timestamp', 'parent', 'is_visible', 'is_deleted']
     list_filter = ['sender', 'post']
     
     class Meta:

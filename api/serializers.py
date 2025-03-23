@@ -36,7 +36,7 @@ class PostCommentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = PostComments
-        fields = ('id', 'sender','comment', 'post', 'timestamp')
+        fields = ('id', 'sender','comment', 'post', 'timestamp', 'parent', 'is_visible', 'is_deleted')
         
         
 class PostSerializer(serializers.ModelSerializer):
