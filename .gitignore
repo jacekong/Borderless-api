@@ -15,7 +15,6 @@ Dockerfile
 
 # media
 /media/
-/static/
 
 # node
 /node_modules/
