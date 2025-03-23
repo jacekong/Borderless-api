@@ -65,4 +65,3 @@ env.bak/
 venv.bak/
 
 */migrations/
-node_modules/
