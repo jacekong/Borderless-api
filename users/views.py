@@ -10,6 +10,9 @@ from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.db.models import Q
 
+'''
+    Api, for mobile devices
+'''
 # create a new user
 class UserRegistView(APIView):
     permission_classes = [AllowAny]
@@ -64,7 +67,9 @@ def getCurrentUser(request):
 
 
 
-# web
+'''
+    Web, User Authentication
+'''
 from django.views import View
 from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login, logout
@@ -72,7 +77,7 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 class UserAuth(View):
-    template_name = 'auth/login.html'
+    template_name = 'account/login.html'
     def get(self, request):
          return render(request, self.template_name, {})
      

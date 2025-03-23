@@ -61,10 +61,17 @@ class PostComments(models.Model):
     comment = models.TextField()
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_comments')
     timestamp = models.DateTimeField(auto_now_add=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, related_name='replies')
+    is_visible = models.BooleanField(default=True)
+    is_deleted = models.BooleanField(default=False)
     
     class Meta:
         ordering = ('timestamp',)
         
     def __str__(self) -> str:
-        return f'- {self.sender.username} -'
+        return f'- {self.sender} comment on {self.post} -'
+    
+    @property
+    def is_reply(self):
+        return self.parent is not None
 

@@ -1,3 +1,11 @@
 from django.test import TestCase
+from api.models import Post
+from users.models import CustomUser
 
-# Create your tests here.
+class TestCreatePost(TestCase):
+    
+    def setUp(self):
+        pass
+
+
+

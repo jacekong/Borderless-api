@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'compressor',
     'django_filters',
     # oauth social media account
+    'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -51,6 +52,10 @@ INSTALLED_APPS = [
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
 
 # google login
 SOCIALACCOUNT_PROVIDERS = {
@@ -282,6 +287,6 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 2
-LOGIN_URL = 'web/accounts/login/'
+LOGIN_URL = 'accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = "login"

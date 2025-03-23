@@ -40,14 +40,16 @@ class JWTAuthMiddleware(BaseMiddleware):
                     sessionid = cookie.split(b'=')[1].decode()
                     break
 
-        if sessionid:
-            user = await self.authenticate_session(sessionid)
-            if user is not None:
-                scope['user'] = user
-            else:
-                scope['user'] = AnonymousUser()
-        else:
-            scope['user'] = AnonymousUser()
+        # if sessionid:
+        #     user = await self.authenticate_session(sessionid)
+        #     print('----------')
+        #     print(user)
+        #     if user is not None:
+        #         scope['user'] = user
+        #     else:
+        #         scope['user'] = AnonymousUser()
+        # else:
+        #     scope['user'] = AnonymousUser()
 
         return await super().__call__(scope, receive, send)
 
@@ -61,12 +63,12 @@ class JWTAuthMiddleware(BaseMiddleware):
         except (InvalidTokenError, ExpiredSignatureError , CustomUser.DoesNotExist):
             raise AuthenticationFailed("Invalid token")
         
-    @database_sync_to_async
-    def authenticate_session(self, sessionid):
-        try:
-            session = Session.objects.get(session_key=sessionid)
-            userid = session.get_decoded().get('_auth_user_id')
-            user = CustomUser.objects.get(id=userid)
-            return user if user is not None and user.is_authenticated else None
-        except (ObjectDoesNotExist, KeyError):
-            return None
+    # @database_sync_to_async
+    # def authenticate_session(self, sessionid):
+    #     try:
+    #         session = Session.objects.get(session_key=sessionid)
+    #         userid = session.get_decoded().get('_auth_user_id')
+    #         user = CustomUser.objects.get(id=userid)
+    #         return user if user is not None and user.is_authenticated else None
+    #     except (ObjectDoesNotExist, KeyError):
+    #         return None
