@@ -1,3 +1,7 @@
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![Flutter](https://img.shields.io/badge/Flutter-3.0+-blue.svg)
+![Django](https://img.shields.io/badge/Django-4.0+-green.svg)
+
 # Borderless-api
 
 # Blog & Real-Time Messaging API
@@ -25,6 +29,7 @@ A Django-based web application with a backend and frontend, featuring blog posti
 - **Friend System**: Find and add friends, view friend lists.
 - **User Authentication**: Register, log in, and log out securely.
 - **Responsive Frontend**: User-friendly interface for all functionalities.
+- **Frontend**: [Flutter App Repository](https://github.com/jacekong/Borderless.git)
 
 ## Tech Stack
 - **Backend**: Django (Python), Django REST Framework
