@@ -18,7 +18,6 @@ A Django-based web application with a backend and frontend, featuring blog posti
   - [Running the Project](#running-the-project)
 - [Usage](#usage)
 - [API Endpoints](#api-endpoints)
-- [Real-Time Messaging](#real-time-messaging)
 - [Goals](#goals)
 - [Contributing](#contributing)
 - [License](#license)
@@ -171,13 +170,13 @@ python manage.py runserver
 - DELETE /api/posts/<str:pk> - DELETE single post
 
 **Real-Time Messaging**
-GET /api/chat/history/<str:user_id>/ - Get chat history with current user
-GET /api/chat/history/images/<str:user_id>/ - Get Iamge chat history with current user
-GET /api/chat/history/voice/<str:user_id>/ -Get Audio chat history with current user
-GET /api/chatlists/ - Get all chat lists
-GET /api/notification/ - Send chat notification
-POST /api/chatlist/create/ - Create new chat
-POST /api/chat/images/ - Send iamge in chat
+- GET /api/chat/history/<str:user_id>/ - Get chat history with current user
+- GET /api/chat/history/images/<str:user_id>/ - Get Iamge chat history with current user
+- GET /api/chat/history/voice/<str:user_id>/ -Get Audio chat history with current user
+- GET /api/chatlists/ - Get all chat lists
+- GET /api/notification/ - Send chat notification
+- POST /api/chatlist/create/ - Create new chat
+- POST /api/chat/images/ - Send iamge in chat
 
 **Websocket**
 - ws/chat/<str:user_id>/ - Chat with user
