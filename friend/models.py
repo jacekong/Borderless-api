@@ -3,7 +3,7 @@ from django.conf import settings
 
 class FriendList(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='user', on_delete=models.CASCADE)
-    friends = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='friends')
+    friends = models.ManyToManyField(settings.AUTH_USER_MODEL, blank=True, related_name='friends', related_query_name='friend')
     
     def __str__(self) -> str:
         return self.user.username
@@ -89,10 +89,3 @@ class FriendRequest(models.Model):
         '''
         self.is_active = False
         self.save()
-        
-        
-        
-        
-        
-        
-        

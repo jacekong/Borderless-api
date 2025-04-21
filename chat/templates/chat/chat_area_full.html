@@ -1,0 +1,30 @@
+{% extends "components/_base.html" %}
+{% load i18n %}
+{% block content %}
+
+<section id="chat-area-mbile" class="w-full h-full fixed top-0 md:hidden flex-col bg-white dark:bg-gray-900 z-50">
+    <header id="chat-header" class="p-4 bg-gray-800 flex items-center space-x-3">
+        <button id="chat-back-button"><svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0 4 4M1 5l4-4"/>
+        </svg></button>
+        <div class="relative ml-2">
+            <img id="chat-avatar" src="{{ chat_user.avatar.url }}" alt="" class="w-10 h-10 rounded-full">
+        </div>
+        <h2 id="chat-username" class="ml-2 text-lg font-semibold text-white">{{ chat_user.username }}</h2>
+    </header>
+    
+    <div id="chat-messages" class="overflow-y-auto px-2 py-4 space-y-6 bg-gray-900" style="height:85vh">
+        <!-- Messages will be appended here by JavaScript -->
+    </div>
+    
+    <!-- Typing input area -->
+    <div id="chat-input" class="p-4">
+        <div class="flex items-center gap-3">
+        <textarea id="message-input" rows="1" class="flex-1 px-4 py-2 rounded-full bg-gray-800 text-white text-sm border border-gray-600 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 focus:outline-none resize-none" placeholder="Type your message..."></textarea>
+        <button onclick="sendMessage()" class="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+            {% trans "Send" %}
+          </button>
+        </div>
+    </div>
+    </section>
+{% endblock content %}

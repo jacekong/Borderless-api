@@ -1,0 +1,65 @@
+{% load i18n %}
+<div class="pt-16"></div>
+<div class="flex w-full mx-auto md:pl-4 md:pr-2 space-y-2 md:w-full md:max-w-[90vw] h-[75vh] bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+  <!-- Sidebar: User List -->
+  <aside id="user-list" class="bg-gray-800 w-full md:w-[400px] text-white border-gray-700 overflow-y-auto rounded-md">
+    <div class="p-4 border-gray-700">
+      <div class="flex justify-between items-center">
+        <h2 class="text-lg font-semibold text-gray-200">{% trans "Chats" %}</h2>
+        <button class="text-gray-400 hover:text-white">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="p-2">
+      <h3 class="text-sm font-semibold text-gray-400">{% trans "Latest Chats" %}</h3>
+    </div>
+    <ul>
+      {% for entry in contact_latest_messages %}
+        <li class="user-item p-4 flex items-center space-x-3 hover:bg-gray-700 cursor-pointer rounded-md" 
+            data-user-id="{{ entry.contact.user_id }}" 
+            onclick="openChat('{{ entry.contact.user_id }}', '{{ entry.contact.username|escapejs }}', '{{ entry.contact.avatar.url }}')">
+          <div class="relative">
+            <img src="{{ entry.contact.avatar.url }}" alt="{{ entry.contact.username }}" class="w-12 h-12 rounded-full">
+          </div>
+          <div class="flex-1 ml-2">
+            <p class="font-medium text-gray-200">{{ entry.contact.username }}</p>
+            <p class="text-sm text-gray-400 truncate">
+              {% if entry.latest_message %}{{ entry.latest_message.message }}{% else %}{% trans "No messages yet" %}{% endif %}
+            </p>
+          </div>
+          <span class="text-xs text-gray-400">{{ entry.latest_message.timestamp|date:"H:i" }}</span>
+        </li>
+      {% empty %}
+        <li class="p-4 text-gray-400">{% trans "No chats yet" %}</li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <!-- Chat Area -->
+  <section id="chat-area" class="hidden md:flex flex-col flex-6 bg-gray-900">
+    <header id="chat-header" class="p-4 bg-gray-800 flex items-center space-x-3 hidden w-[40vw]">
+      <div class="relative">
+        <img id="chat-avatar" src="" alt="" class="w-10 h-10 rounded-full">
+        <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-800"></span>
+      </div>
+      <h2 id="chat-username" class="ml-2 text-lg font-semibold text-white"></h2>
+    </header>
+
+    <div id="chat-messages" class="flex-1 overflow-y-auto px-1 py-4 space-y-6 bg-gray-900">
+      <!-- Messages will be appended here by JavaScript -->
+    </div>
+
+    <!-- Typing input area -->
+    <div id="chat-input" class="p-4 hidden">
+      <div class="flex items-center gap-3">
+        <textarea id="message-input" rows="1" class="flex-1 px-4 py-2 rounded-full bg-gray-800 text-white text-sm border border-gray-600 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 focus:outline-none resize-none" placeholder="Type your message..."></textarea>
+        <button onclick="sendMessage()" class="text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-cyan-300 dark:focus:ring-cyan-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+          {% trans "Send" %}
+        </button>
+      </div>
+    </div>
+  </section>
+</div>

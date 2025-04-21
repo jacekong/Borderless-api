@@ -1,0 +1,21 @@
+{% load i18n %}
+<div class="mt-6">
+</div>
+<div class="mx-auto mt-20 px-4 space-y-2 md:w-[600px] h-[75vh] max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+    <h2>{% trans "Friend List" %}</h2>
+  {% for friend in friend_list %}
+      <div class="overflow-y-auto flex items-center p-4 bg-gray-50 rounded-lg dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out w-full">
+            <a href="{% url 'friend_detail' friend.user_id %}" class="cursor-pointer">
+                <img class="w-10 h-10 rounded-full object-cover mr-4" src="{{ friend.avatar.url }}" alt="{{ friend.username }}'s avatar">
+            </a>
+          <div class="flex-grow">
+              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ friend.username }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">@{{ friend.user_id }}</p>
+          </div>
+          <button class="text-xs md:text-sm px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out" onclick="openMobileChat('{{ friend.user_id }}', '{{ friend.username|escapejs }}', '{{ friend.avatar.url }}')">
+              {% trans "Message" %}
+          </button>
+      </div>
+  {% endfor %}
+
+</div>

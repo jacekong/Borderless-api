@@ -23,7 +23,7 @@ urlpatterns = [
     
     # web
     path('web/chat/page/', ChatWebPage.as_view(), name='chat_page'),
-    path('web/chat/user/<str:user_id>/', ChatAreaWebView.as_view(), name='chat_with_user')
+    path('web/chat/user/<str:user_id>/', ChatAreaWebView.as_view(), name='chat_with_user'),
 ]
 
 urlpatterns += websocket_urlpatterns

@@ -1,0 +1,10 @@
+{% extends 'admin/menu.html' %}
+{% load static %}
+{% block branding %}
+<a class="item" href="{% url 'admin:index' %}">
+  <img 
+    title="borderless admin" 
+    src="{% static 'logo/borderless.png' %}" 
+    alt="{{ site_header|default:_('Borderless administration') }}" />
+</a>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% load i18n %}
+<div id="share-template" class="hidden">
+    <div class="share-content p-6 rounded-lg shadow-lg w-[400px] h-[600px] flex flex-col justify-between" style="background-color: #f9fafb; font-family: Arial, sans-serif;">
+        <div class="flex flex-col items-center">
+            <h2 class="text-2xl font-bold" style="color: #1f2937;">Borderless</h2>
+            <p class="text-sm" style="color: #6b7280;">https://mywebsite.com</p>
+        </div>
+        <div class="flex items-center mt-4">
+            <img id="share-user-avatar" src="" alt="User Avatar" class="w-12 h-12 rounded-full mr-3" style="border: 2px solid #e5e7eb;">
+            <p id="share-username" class="text-lg font-semibold" style="color: #374151;"></p>
+        </div>
+        <div class="flex-grow mt-4 p-4 rounded-md" style="background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <p id="share-post-content" class="text-base" style="color: #4b5563; word-wrap: break-word;"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Share Preview Modal -->
+<div id="sharePreviewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+<div class="relative bg-white p-4 rounded-lg max-w-md w-full">
+    <img id="sharePreviewImage" src="" alt="Share Preview" class="w-full">
+    <button id="downloadShareBtn" class="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">{% trans "Download" %}</button>
+    <button id="shareBtn" class="absolute top-2 right-28 bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">{% trans "Share" %}</button>
+    <button onclick="closeSharePreviewModal()" class="absolute top-2 left-2 text-gray-500 hover:text-gray-700 text-2xl">×</button>
+</div>
+</div>

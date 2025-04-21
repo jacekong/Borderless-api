@@ -3,7 +3,8 @@ from users.models import CustomUser
 from users.serializers import UserSerializer
 from .models import Post, PostImages, PostVideos, PostComments
 
-    
+from .tasks import transcode_video
+
 class PostImagesSerializer(serializers.ModelSerializer):
     images = serializers.ImageField(max_length=None, allow_empty_file=True, use_url=True)
     
@@ -23,7 +24,7 @@ class PostVideosSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = PostVideos
-        fields = ('video',)
+        fields = ('video', 'video_id', 'processed', 'hls_path')
         
     def create(self, validated_data):
         video = validated_data.pop('video')
@@ -76,10 +77,7 @@ class PostSerializer(serializers.ModelSerializer):
                 PostImages.objects.create(post=post, images=image_data)
                 
         if video_data:
-            PostVideos.objects.create(post=post, video=video_data)
+            post_video = PostVideos.objects.create(post=post, video=video_data)
+            transcode_video.delay(str(post_video.video_id))
             
         return post
-    
-        
-        
-        

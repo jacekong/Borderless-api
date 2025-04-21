@@ -1,48 +1,106 @@
-// image slider
-let slideIndex = 1;
-showSlides(slideIndex);
+// Open modal for single image
+function openSingleImageModal(imageUrl) {
+  
+  const modal = document.getElementById('imageModal');
+  const modalImage = document.getElementById('modalImage');
+  const prevArrow = document.querySelector('.prevBtn');
+  const nextArrow = document.querySelector('.nextBtn');
 
+  modalImage.src = imageUrl;
+  modal.classList.remove('hidden');
+  prevArrow.classList.add('hidden');
+  nextArrow.classList.add('hidden');
+}
+
+let slideIndex = 0;
+let slides;
+let currentPostId = null;
+let filteredImageContainers = [];
+let hammerModal;
+
+// Initialize on DOM load
+document.addEventListener("DOMContentLoaded", function() {
+    slides = document.getElementsByClassName("mySlides");
+});
+
+// Open modal for a specific post
+function openModal(postId) {
+    currentPostId = postId;
+    const modal = document.getElementById("imageModal");
+    modal.classList.remove("hidden");
+
+    const currentSlides = Array.from(slides).find(
+        slide => slide.getAttribute("data-post-id") === postId
+    );
+
+    filteredImageContainers = currentSlides
+        ? Array.from(currentSlides.getElementsByClassName("image-container"))
+        : [];
+
+    const prevBtn = document.querySelector(".prevBtn");
+    const nextBtn = document.querySelector(".nextBtn");
+    if (filteredImageContainers.length > 1) {
+        prevBtn.classList.remove("hidden");
+        nextBtn.classList.remove("hidden");
+
+        const modalContent = document.querySelector(".image-modal-content");
+        hammerModal = new Hammer(modalContent);
+        hammerModal.on("swipeleft", () => plusSlides(1));
+        hammerModal.on("swiperight", () => plusSlides(-1));
+    } else {
+        prevBtn.classList.add("hidden");
+        nextBtn.classList.add("hidden");
+    }
+
+    if (slideIndex >= filteredImageContainers.length) {
+        slideIndex = 0;
+    }
+    showSlides(slideIndex);
+}
+
+// Close modal
+function closeModal(event) {
+    if (event && event.target.id !== "imageModal") return;
+    document.getElementById("imageModal").classList.add("hidden");
+    currentPostId = null;
+    filteredImageContainers = [];
+    if (hammerModal) {
+        hammerModal.off("swipeleft swiperight");
+    }
+}
+
+// Navigation functions
 function plusSlides(n) {
-  showSlides(slideIndex += n);
+    if (filteredImageContainers.length <= 1) return;
+    showSlides(slideIndex += n);
 }
 
 function currentSlide(n) {
-  showSlides(slideIndex = n);
+    showSlides(slideIndex = n);
 }
 
 function showSlides(n) {
-  let i;
-  let slides = document.getElementsByClassName("mySlides");
-  let dots = document.getElementsByClassName("bar");
-  if (n > slides.length) {slideIndex = 1}    
-  if (n < 1) {slideIndex = slides.length}
-  for (i = 0; i < slides.length; i++) {
-    slides[i].style.display = "none";  
-  }
-  for (i = 0; i < dots.length; i++) {
-    dots[i].className = dots[i].className.replace(" active", "");
-  }
-  slides[slideIndex-1].style.display = " block";  
-  dots[slideIndex-1].className += " active";
+    if (filteredImageContainers.length === 0) return;
+
+    if (n >= filteredImageContainers.length) { slideIndex = 0; }
+    if (n < 0) { slideIndex = filteredImageContainers.length - 1; }
+
+    const modalImage = document.getElementById("modalImage");
+    const currentImage = filteredImageContainers[slideIndex].querySelector("img");
+    modalImage.src = currentImage.src;
+
 }
 
-var slideshowContainer = document.querySelector('.slideshow-container');
-// Add event listeners for keyboard navigation
-document.addEventListener('keydown', function(event) {
-  if (event.key === 'ArrowLeft') {
-    plusSlides(-1);
-    console.log("hi");
-  } else if (event.key === 'ArrowRight') {
-    plusSlides(1);
-  }
-});
-
-// Enable touch swipe gesture
-var hammer = new Hammer(slideshowContainer);
-hammer.on('swipeleft', function () {
-  plusSlides(1);
-});
-
-hammer.on('swiperight', function () {
-  plusSlides(-1);
+// Keyboard navigation
+document.addEventListener("keydown", function(event) {
+    const modal = document.getElementById("imageModal");
+    if (modal && !modal.classList.contains("hidden") && filteredImageContainers.length > 1) {
+        if (event.key === "ArrowLeft") {
+            plusSlides(-1);
+        } else if (event.key === "ArrowRight") {
+            plusSlides(1);
+        } else if (event.key === "Escape") {
+            closeModal();
+        }
+    }
 });

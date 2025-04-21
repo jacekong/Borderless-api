@@ -1,31 +1,30 @@
-{% include "components/_base.html" %}
-
+{% extends "components/_base.html" %}
+{% load i18n %}
 {% block title %}
-Friends List
+{{ user.username }} Friends List
 {% endblock %}
 
 {% block content %}
-
-<script>
-  import { Avatar, Button } from 'flowbite-svelte';
-
-  const friends = [
-    { id: 1, name: 'John Doe', avatar: '/images/profile-picture-1.webp' },
-    { id: 2, name: 'Jane Smith', avatar: '/images/profile-picture-2.webp' },
-  ];
-
-</script>
-
-<div class="space-y-4">
-  {#each friends as friend}
-    <div class="flex items-center space-x-4 rtl:space-x-reverse bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
-      <Avatar src={friend.avatar} alt={friend.name} />
-      <div class="flex-1">
-        <p class="text-lg font-semibold text-gray-900 dark:text-white">{friend.name}</p>
+<div class="mt-6">
+</div>
+<div class="mx-auto mt-20 px-4 space-y-2 md:w-[600px] h-[75vh] max-w-2xl bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+    <h2>{% trans "Friend List" %}</h2>
+  {% for friend in friend_list %}
+      <div class="overflow-y-auto flex items-center p-4 bg-gray-50 rounded-lg dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out w-full">
+            <a href="{% url 'friend_detail' friend.user_id %}" class="cursor-pointer">
+                <img class="w-10 h-10 rounded-full object-cover mr-4" src="{{ friend.avatar.url }}" alt="{{ friend.username }}'s avatar">
+            </a>
+          <div class="flex-grow">
+              <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ friend.username }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">@{{ friend.user_id }}</p>
+          </div>
+          <button class="text-xs md:text-sm px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-150 ease-in-out" data-user-id="{{ friend.user_id }}"
+          onclick="openChat('{{ friend.user_id }}', '{{ friend.username|escapejs }}')">
+             {% trans " Message" %}
+          </button>
       </div>
-      <Button size="sm" on:click={() => sendMessage(friend.id)}>Send Message</Button>
-    </div>
-  {/each}
+  {% endfor %}
+
 </div>
 
 {% endblock %}

@@ -1,52 +1,129 @@
+{% load i18n %}
 {% if user.is_authenticated %}
-<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700" aria-label="Sidebar">
-    <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
-       <ul class="space-y-2 font-medium">
+<aside id="logo-sidebar"
+   class="fixed top-0 left-0 z-40 w-64 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 sm:translate-x-0 dark:bg-gray-800 dark:border-gray-700"
+   aria-label="Sidebar">
+   <div class="h-full px-3 pb-4 overflow-y-auto bg-white dark:bg-gray-800">
+      <ul class="space-y-2 font-medium">
          <li>
-            <a href="{% url 'home' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {% if request.path == '/' %}dark:bg-gray-700 bg-gray-100{% endif %}">
-               <svg class="dark:text-gray-400" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24" color="#000000"><defs><style>.cls-637b82edf95e86b59c57a0aa-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><polyline class="cls-637b82edf95e86b59c57a0aa-1" points="20 8.5 20 22.5 4 22.5 4 8.5"></polyline><polyline class="cls-637b82edf95e86b59c57a0aa-1" points="23 10.5 12 1.5 1 10.5"></polyline></svg>
-                <span class="ms-3">Home</span>
-             </a>
-         </li>
-          <li>
-             <a href="{% url 'account' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {% if request.path == '/account/' %}dark:bg-gray-700 bg-gray-100{% endif %}">
-               <svg class="dark:text-gray-400" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24" color="#000000"><defs><style>.cls-6374f8d9b67f094e4896c670-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><circle class="cls-6374f8d9b67f094e4896c670-1" cx="12" cy="7.25" r="5.73"></circle><path class="cls-6374f8d9b67f094e4896c670-1" d="M1.5,23.48l.37-2.05A10.3,10.3,0,0,1,12,13h0a10.3,10.3,0,0,1,10.13,8.45l.37,2.05"></path></svg>
-                <span class="ms-3">My Account</span>
-             </a>
-          </li>
-          <li>
-             <a href="{% url 'chat_page' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {% if request.path == '/web/chat/page/' %}dark:bg-gray-700 bg-gray-100{% endif %}">
-                <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                   <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 0 1 0-2h2a1 1 0 0 1 0 2Z"/>
-                </svg>
-                <span class="flex-1 ms-3 whitespace-nowrap">Message</span>
-                <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span>
-             </a>
-          </li>
-          <li>
-             <a href="#" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
-                   <path d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z"/>
-                </svg>
-                <span class="flex-1 ms-3 whitespace-nowrap">Friends</span>
-             </a>
-          </li>
-          <li>
-            <a href="{% url  'search_friend' %}" class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {% if request.path == '/web/search/friends/'%}dark:bg-gray-700 bg-gray-100{%endif%}">
-               <svg class="dark:text-gray-400" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24" color="#000000"><defs><style>.cls-6374f8d9b67f094e4896c660-1{fill:none;stroke:currentColor;stroke-miterlimit:10;}</style></defs><circle class="cls-6374f8d9b67f094e4896c660-1" cx="9.14" cy="9.14" r="7.64"></circle><line class="cls-6374f8d9b67f094e4896c660-1" x1="22.5" y1="22.5" x2="14.39" y2="14.39"></line></svg>
-               <span class="flex-1 ms-3 whitespace-nowrap">Search Friends</span>
+            <a id="home-page-btn" href="{% url 'home' %}"
+               class="menu-item flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+               <svg class="dark:text-gray-400" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24" color="#000000">
+                  <defs>
+                     <style>
+                        .cls-637b82edf95e86b59c57a0aa-1 {
+                           fill: none;
+                           stroke: currentColor;
+                           stroke-miterlimit: 10;
+                        }
+                     </style>
+                  </defs>
+                  <polyline class="cls-637b82edf95e86b59c57a0aa-1" points="20 8.5 20 22.5 4 22.5 4 8.5"></polyline>
+                  <polyline class="cls-637b82edf95e86b59c57a0aa-1" points="23 10.5 12 1.5 1 10.5"></polyline>
+               </svg>
+               <span class="ms-3">{% trans "Home" %}</span>
             </a>
-          </li>
-          <li class="">
-            <button id="theme-toggle" type="button" class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
-               <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-               <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg> 
-           </button>
-          </li>
-          <div class="h-11"></div>
-       </ul>
-    </div>
- </aside>
- 
+         </li>
+         <li>
+            <a id="account-btn" href="{% url 'account' %}"
+               class="menu-item flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+               <svg class="dark:text-gray-400" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24" color="#000000">
+                  <defs>
+                     <style>
+                        .cls-6374f8d9b67f094e4896c670-1 {
+                           fill: none;
+                           stroke: currentColor;
+                           stroke-miterlimit: 10;
+                        }
+                     </style>
+                  </defs>
+                  <circle class="cls-6374f8d9b67f094e4896c670-1" cx="12" cy="7.25" r="5.73"></circle>
+                  <path class="cls-6374f8d9b67f094e4896c670-1"
+                     d="M1.5,23.48l.37-2.05A10.3,10.3,0,0,1,12,13h0a10.3,10.3,0,0,1,10.13,8.45l.37,2.05"></path>
+               </svg>
+               <span class="ms-3">{% trans "My Account" %}</span>
+            </a>
+         </li>
+         <li>
+            <a id="message-btn" href="{% url 'chat_page' %}" 
+               class="menu-item flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+                <svg class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                     aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="m17.418 3.623-.018-.008a6.713 6.713 0 0 0-2.4-.569V2h1a1 1 0 1 0 0-2h-2a1 1 0 0 0-1 1v2H9.89A6.977 6.977 0 0 1 12 8v5h-2V8A5 5 0 1 0 0 8v6a1 1 0 0 0 1 1h8v4a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-4h6a1 1 0 0 0 1-1V8a5 5 0 0 0-2.582-4.377ZM6 12H4a1 1 0 1 1 0-2h2a1 1 0 0 1 0 2Z" />
+                </svg>
+                <span class="flex-1 ms-3 whitespace-nowrap">{% trans "Message" %}</span>
+                <span class="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">3</span>
+            </a>
+        </li>
+         <li>
+            <a id="friends-btn" href="{% url 'friend_list' %}"
+               class="menu-item flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
+               <svg
+                  class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                  aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                  <path
+                     d="M14 2a3.963 3.963 0 0 0-1.4.267 6.439 6.439 0 0 1-1.331 6.638A4 4 0 1 0 14 2Zm1 9h-1.264A6.957 6.957 0 0 1 15 15v2a2.97 2.97 0 0 1-.184 1H19a1 1 0 0 0 1-1v-1a5.006 5.006 0 0 0-5-5ZM6.5 9a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9ZM8 10H5a5.006 5.006 0 0 0-5 5v2a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-2a5.006 5.006 0 0 0-5-5Z" />
+               </svg>
+               <span class="flex-1 ms-3 whitespace-nowrap">{% trans "Friends" %}</span>
+            </a>
+         </li>
+         <li>
+            <a id="search-friend-btn" href="{% url  'search_friend' %}"
+               class="menu-item flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group {% if request.path == '/web/search/friends/'%}dark:bg-gray-700 bg-gray-100{%endif%}">
+               <svg class="dark:text-gray-400" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24" stroke-width="1.5" width="24" height="24" color="#000000">
+                  <defs>
+                     <style>
+                        .cls-6374f8d9b67f094e4896c660-1 {
+                           fill: none;
+                           stroke: currentColor;
+                           stroke-miterlimit: 10;
+                        }
+                     </style>
+                  </defs>
+                  <circle class="cls-6374f8d9b67f094e4896c660-1" cx="9.14" cy="9.14" r="7.64"></circle>
+                  <line class="cls-6374f8d9b67f094e4896c660-1" x1="22.5" y1="22.5" x2="14.39" y2="14.39"></line>
+               </svg>
+               <span class="flex-1 ms-3 whitespace-nowrap">{% trans "Search Friends" %}</span>
+            </a>
+         </li>
+         <li>
+            <button id="theme-toggle" type="button"
+               class="text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-500 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5">
+               <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
+               </svg>
+               <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg">
+                  <path
+                     d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+                     fill-rule="evenodd" clip-rule="evenodd"></path>
+               </svg>
+            </button>
+         </li>
+         <li id="create-post-btn" class="flex justify-center p-2 bg-blue-500 text-white rounded-full md:hidden">
+            <a href="{% url 'web_post_creation' %}">{% trans "Create post" %}</a>
+         </li>
+         <li>
+            <div class="py-4">
+               <form action="{% url 'set_language' %}" method="post">
+                   {% csrf_token %}
+                   <select name="language" onchange="this.form.submit()" class="px-2 py-1 border rounded-md bg-gray-200 dark:bg-gray-800">
+                       {% get_available_languages as LANGUAGES %}
+                       {% for lang in LANGUAGES %}
+                       <option value="{{ lang.0 }}" {% if lang.0 == LANGUAGE_CODE %}selected{% endif %}>
+                           {{ lang.1 }}
+                       </option>
+                       {% endfor %}
+                   </select>
+               </form>
+           </div>
+         </li>
+      </ul>
+   </div>
+</aside>
 
 {% endif %}

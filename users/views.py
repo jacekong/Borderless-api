@@ -23,6 +23,11 @@ class UserRegistView(APIView):
             serializer.save()
             return Response({"message": "success"}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request):
+        template = 'account/register.html'
+    
+        return render(request, template, {})
 
 
 # search user
@@ -75,6 +80,12 @@ from django.shortcuts import render,redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from api.models import Post
+from friend.models import FriendList
+from django.template.loader import render_to_string
+from django.http import JsonResponse
+from django.core.paginator import Paginator
+from django.utils.translation import gettext as _
 
 class UserAuth(View):
     template_name = 'account/login.html'
@@ -93,7 +104,7 @@ class UserAuth(View):
                 return redirect('home')
             else:
                 # Return an 'invalid login' error message.
-                messages.success(request, ("Wrong credential, please try again...~..~"))
+                messages.success(request, _("Wrong credential, please try again...~..~"))
                 return redirect('login')
         else:
             return render(request, self.template_name, {})
@@ -103,18 +114,56 @@ def logout_user(request):
     return redirect('login')
 
 class WebGetSearchForm(LoginRequiredMixin, View):
-    template = 'account/search_friend.html'
+    template = 'users/partials/_search_friends.html'
     
     def get(self, request):
-        return render(request, self.template, {})
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            html = render_to_string(self.template, {})
+            
+            return JsonResponse({'html': html}, status=status.HTTP_200_OK)
+        return render(request, 'friends/search_friend.html', {})
 
 class WebSearchFriend(LoginRequiredMixin, View):
-    
+    template = 'friends/search_friend.html'
     def get(self, request):
         query = request.GET.get('query', '')
-        print(query)
         friends = None
         if query:
             friends = CustomUser.objects.filter(Q(username__icontains=query) | Q(user_id__icontains=query))
-        return render(request, 'account/search_friend.html', {'friends': friends})
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                html = render_to_string(self.template, {'friends': friends})
+                
+                return JsonResponse({'html': html}, status=status.HTTP_200_OK)
+        return render(request, self.template, {'friends': friends})
+
+# user profile page
+class AccountPage(LoginRequiredMixin, View):
+    N = 12
+    
+    def get(self, request):
+        user = request.user
+        # get login user's posts
+        posts_list = Post.objects.prefetch_related('post_images').filter(author=user).order_by('-created_date')
+        page_number = int(request.GET.get('profile_page', 1))
+        paginator  = Paginator(posts_list, self.N, allow_empty_first_page=True)
+        posts = paginator.get_page(page_number)
+        next_page = page_number + 1 if posts.has_next() else None
+        print('------get page -------')
+        print(f"Page {page_number}, has_next: {posts.has_next()}")
+        # get all friends 
+        try:
+            friend_list = FriendList.objects.get(user=user.id)
+            friends = friend_list.friends.all()
+            context = {"posts": posts, "friends": len(friends), "user": user, "profile_next_page": next_page}
+        except FriendList.DoesNotExist:
+            context = {"posts": posts, "friends": 0, "user": user, "profile_next_page": next_page}
+        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            html = render_to_string('users/partials/_account.html', context)
             
+            return JsonResponse({'html': html}, status=status.HTTP_200_OK)
+        
+        if request.headers.get('HX-Request') == 'true':
+            return render(request, 'users/partials/_post_grid.html', context)
+
+        return render(request, 'users/account.html', context)

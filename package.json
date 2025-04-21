@@ -4,6 +4,13 @@
     "tailwindcss": "^3.4.4"
   },
   "dependencies": {
-    "flowbite": "^2.3.0"
+    "flowbite": "^2.3.0",
+    "html2canvas-pro": "^1.5.8",
+    "tailwindcss": "^3.4.4",
+    "videojs-hls-quality-selector": "^2.0.0"
+  },
+  "scripts": {
+    "build:css": "npx tailwindcss -i ./static/src/input.css -o ./static/src/output.css --minify",
+    "watch:css": "npx tailwindcss -i ./static/src/input.css -o ./static/src/output.css --watch"
   }
 }

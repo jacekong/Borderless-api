@@ -1,0 +1,28 @@
+{% load i18n %}
+<div class="flex mt-16 pt-2">
+    <div class="flex-grow px-2 md:px-6 lg:px-8 max-w-3xl mx-auto">
+      <!-- Create post section -->
+      <div class="mb-6 w-full hidden md:block">
+        {% include "posts/create_post.html" %}
+      </div>
+  
+      {% include "partials/_posts_feed.html" %}
+  
+      <!-- Right sidebar for public posts -->
+      <div class="hidden lg:block w-[430px] fixed right-12">
+        {% include "components/_top_public_post.html" %}
+      </div>
+    </div>
+    <!-- Pagination Controls -->
+    {% if posts.has_next %}
+    <div class="flex justify-center">
+      <button
+        id="load-more"
+        onclick="loadMore()"
+        class="mt-4 mx-auto px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700"
+      >
+        {% trans "Load More" %}
+      </button>
+    </div>
+    {% endif %}
+</div>

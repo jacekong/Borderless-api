@@ -1,0 +1,196 @@
+
+   {% load static %}
+   {% load i18n %}
+   <!-- Posts feed -->
+    <div class="space-y-2 w-full" id="posts-container">
+      {% for post in posts %}
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow md:w-[600px]">
+        <div class="p-4">
+          <!-- Post header -->
+          <div class="flex items-center mb-4">
+            <a href="{% url 'friend_detail' post.author.user_id %}" class="cursor-pointer">
+              <img src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}"
+                class="w-10 h-10 rounded-full mr-3">
+            </a>
+            <div>
+              <div class="flex align-baseline">
+                <p class="font-semibold text-gray-900 dark:text-white">{{ post.author.username }}</p>
+                {% if post.author.id not in friends %}
+                <form id="friend-request-form-{{ post.author.user_id }}"
+                  action="{% url 'send_friend_request' post.author.user_id %}" method="POST">
+                  {% csrf_token %}
+                  <button type="submit" class="text-sm text-blue-500 ml-2 hover:text-blue-700">
+                    {% trans "Follow" %}
+                  </button>
+                </form>
+                {% endif %}
+              </div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">{{ post.created_date|timesince }} {% trans "ago" %}</p>
+            </div>
+          </div>
+
+          <!-- Post content -->
+          <p class="text-gray-800 dark:text-white mb-4">{{ post.post_content }}</p>
+
+          {% if post.post_video.all %}
+          <!-- Video display -->
+          {% for video in post.post_video.all %}
+          {% if video.processed %}
+          <div class="mb-3 w-full md:w-1/2">
+            <video id="video-{{ video.video_id }}" width="100%" height="auto" class="video-js vjs-default-skin" controls
+              preload="auto">
+              <source src="{{ video.hls_path }}" type="application/x-mpegURL">
+              <p class="vjs-no-js">
+                {% trans "To view this video, please enable JavaScript, and consider upgrading to a web browser that" %}
+                <a href="https://videojs.com/html5-video-support/" target="_blank">{% trans "supports HTML5 video" %}</a>
+              </p>
+            </video>
+          </div>
+          {% else %}
+          <div class="mb-3 text-gray-500 dark:text-gray-400">
+            <p>{% trans "Video is still processing..." %}</p>
+          </div>
+          {% endif %}
+          {% endfor %}
+          <!-- Post images -->
+          {% elif post.post_images.all|length > 1 %}
+          <div class="image my-3">
+            <div class="mySlides image-grid grid grid-cols-4 md:grid-cols-3 gap-1 mx-auto" data-post-id="{{ post.post_id }}">
+              {% for image in post.post_images.all %}
+                <div class="image-container h-[90px] w-[90px] md:h-[200px] md:w-[180px]">
+                  <img src="{{ image.images.url }}" class="h-full w-full object-cover" alt="post image" onclick="openModal('{{ post.post_id }}');currentSlide({{ forloop.counter0 }})" />
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% elif post.post_images.all|length == 1 %}
+            {% for image in post.post_images.all %}
+              <div class="mb-3">
+                <img src="{{ image.images.url }}" style="width:50%"
+                  onclick="openSingleImageModal('{{ image.images.url }}')">
+              </div>
+            {% endfor %}
+          {% else %}
+          {% endif %}
+
+          <!-- Image Preview Modal -->
+          <div id="imageModal"
+            class="fixed flex inset-0 bg-gray-800 bg-opacity-70 z-50 hidden justify-center items-center"
+            onclick="closeModal(event)">
+            <div class="image-modal-content relative rounded-sm max-w-lg justify-items-center"
+              onclick="event.stopPropagation()">
+              <img style="max-height:80vh !important;" id="modalImage" src="" class="max-w-full max-h-[80vh] object-contain" alt="Image Preview">
+              <a class="prevBtn absolute left-0 top-1/2 transform -translate-y-1/2 text-white text-2xl cursor-pointer rounded-full p-2"
+                onclick="plusSlides(-1)">
+                <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                  stroke-width="1.5" width="20" height="20" color="#000000">
+                  <defs>
+                    <style>
+                      .cls-63ce7424ea57ea6c8380057f-1 {
+                        fill: none;
+                        stroke: currentColor;
+                        stroke-miterlimit: 10;
+                      }
+                    </style>
+                  </defs>
+                  <line class="cls-63ce7424ea57ea6c8380057f-1" x1="2.5" y1="12" x2="23.5" y2="12"></line>
+                  <polyline class="cls-63ce7424ea57ea6c8380057f-1" points="10.14 4.36 2.5 12 10.14 19.64"></polyline>
+                </svg>
+              </a>
+              <a class="nextBtn absolute right-0 top-1/2 transform -translate-y-1/2 text-white text-2xl cursor-pointer p-2 rounded-full"
+                onclick="plusSlides(1)">
+                <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+                  stroke-width="1.5" width="20" height="20" color="#000000">
+                  <defs>
+                    <style>
+                      .cls-63ce7424ea57ea6c8380058e-1 {
+                        fill: none;
+                        stroke: currentColor;
+                        stroke-miterlimit: 10;
+                      }
+                    </style>
+                  </defs>
+                  <line class="cls-63ce7424ea57ea6c8380058e-1" x1="21.5" y1="12" x2="0.5" y2="12"></line>
+                  <polyline class="cls-63ce7424ea57ea6c8380058e-1" points="13.86 4.36 21.5 12 13.86 19.64"></polyline>
+                </svg>
+              </a>
+              <a class="absolute right-2 top-2 bg-gray-600 p-1 rounded-full" onclick="closeModal()"><svg
+                  class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                  width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M6 18 17.94 6M18 18 6.06 6" />
+                </svg>
+              </a>
+            </div>
+          </div>
+          <!-- Post actions -->
+          <div class="flex items-center space-x-4">
+            <button
+              class="like-button flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 text-sm"
+              data-post-id="{{ post.post_id }}">
+              <svg class="w-5 h-5 mr-1 {% if request.user in post.likes.all %}fill-current text-red-500{% endif %}"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z">
+                </path>
+              </svg>
+              {% if request.user in post.likes.all %}{% trans "Unlike" %}{% else %}{% trans "Like" %}{% endif %}
+            </button>
+            <span class="like-count ml-1 text-xs text-gray-600">{{ post.likes.count }} {% trans "likes" %}</span>
+
+            <button
+              class="comment-btn flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 text-sm"
+              data-modal-target="modal-{{ post.post_id }}" data-modal-toggle="modal-{{ post.post_id }}">
+              <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z">
+                </path>
+              </svg>
+              {% trans "Comment" %}
+            </button>
+            <span class="text-xs">{{ post.post_comments.all|length }}</span>
+            <button
+              class="share-btn flex items-center text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 text-sm"
+              data-post-id="{{post.post_id}}"
+              onclick="generateShareImage('{{post.post_content}}', '{{post.post_id}}', '{{ post.author.avatar.url|escapejs }}', '{{ post.author.username|escapejs }}')">
+              <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z">
+                </path>
+              </svg>
+              {% trans "Share" %}
+            </button>
+          </div>
+        </div>
+        {% include "components/comment_modal.html" with post=post %}
+      </div>
+
+      {% endfor %}
+    </div>
+  </div>
+
+  {% comment %} loading aniamation helper {% endcomment %}
+
+  <div role="status" class="hidden space-y-8 animate-pulse md:space-y-0 md:space-x-8 rtl:space-x-reverse md:flex md:items-center">
+    <div class="hidden flex items-center justify-center w-full h-48 bg-gray-300 rounded-sm sm:w-96 dark:bg-gray-700">
+        <svg class="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+        </svg>
+    </div>
+    <div class="hidden w-full">
+        <div class="h-2.5 bg-gray-200 rounded-full dark:bg-gray-700 w-48 mb-4"></div>
+        <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[480px] mb-2.5"></div>
+        <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 mb-2.5"></div>
+        <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[440px] mb-2.5"></div>
+        <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[460px] mb-2.5"></div>
+        <div class="h-2 bg-gray-200 rounded-full dark:bg-gray-700 max-w-[360px]"></div>
+    </div>
+    <span class="sr-only">Loading...</span>
+  </div>
+
+  <script
+    src="{% static 'js/comment_socket.js' %}"
+    type="text/javascript"
+  ></script>

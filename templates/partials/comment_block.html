@@ -1,0 +1,34 @@
+{% load i18n %}
+{% load custom_filters %}
+<li class="ml-{{ level|mul:4 }}" data-comment-id="{{ comment.id }}">
+  <div class="flex justify-between items-start">
+    <div class="flex">
+      <img src="{{ comment.sender.avatar.url }}" class="w-8 h-8 rounded-full mr-2" />
+      <div>
+        <p class="font-semibold">{{ comment.sender.username }}</p>
+        {% if comment.parent %}
+          <p class="text-xs text-gray-500">{% trans "replied to" %} {{ comment.parent.sender.username }}</p>
+        {% endif %}
+        <p class="text-gray-700 dark:text-gray-300">{{ comment.comment }}</p>
+        <div class="mt-1">
+          <button class="text-blue-500 text-xs hover:underline" onclick="showReplyForm({{ comment.id }})">{% trans "Reply" %}</button>
+        </div>
+        <!-- Reply form -->
+        <div id="reply-form-{{ comment.id }}" class="hidden mt-2">
+          <textarea rows="1" class="w-full text-sm border rounded px-1 dark:bg-gray-800 dark:text-white" placeholder="Write a reply..."></textarea>
+          <div class="text-right mt-1">
+            <button class="reply-btn text-xs text-white bg-blue-600 px-2 py-1 rounded" onclick="sendReply('{{ post.post_id }}', {{ comment.id }})">{% trans "Post" %}</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <span class="text-xs text-gray-400">{{ comment.timestamp|timesince }} {% trans "ago" %}</span>
+  </div>
+  {% if comment.replies.all %}
+    <ul class="space-y-2 mt-2">
+      {% for reply in comment.replies.all|sort_comments %}
+        {% include "partials/comment_block.html" with comment=reply post=post level=level|add:1 %}
+      {% endfor %}
+    </ul>
+  {% endif %}
+</li>

@@ -20,11 +20,11 @@
     
     {% block content %}
     <div class="fixed inset-0 flex items-center justify-center">
-        <div class="text-center p-6 shadow w-1/2 bg-slate-300 rounded-lg">
+        <div class="text-center p-6 shadow w-1/2 bg-gray-900 rounded-lg">
             <div class="flex justify-center mb-4">
-                <img src="/media/icons/google.png" alt="google" style="width: 70px;">
+                <img src="{% static '/icons/google.png' %}" alt="google" style="width: 70px;">
             </div>
-            <h2 class="text-xl mb-4">Continue with Google</h2>
+            <h2 class="text-xl mb-4">{% trans "Continue with Google" %}</h2>
             <div class="flex justify-center btn-primary">
                 {% element form method="post" no_visible_fields=True %}
                     {% slot actions %}

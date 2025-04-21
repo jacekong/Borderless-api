@@ -3,23 +3,20 @@ from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
 
+from django.utils.translation import gettext_lazy as _
+
 load_dotenv()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 BASE_URL = os.getenv('BASE_URL')
 
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = os.getenv('DEBUG', 'False').lower() in ['true', '1']
 
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 ALLOWED_HOSTS = ['*']
-
-
-# Application definition
 
 INSTALLED_APPS = [
     'daphne',
@@ -31,11 +28,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
     
     'api',
     'users',
     'friend',
     'chat',
+    'notification',
+    'tracking',
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google'
+    'allauth.socialaccount.providers.google',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -65,8 +65,8 @@ SOCIALACCOUNT_PROVIDERS = {
             'email'
         ],
         'APP': {
-            'client_id': os.environ['CLIENT_ID'],
-            'secret': os.environ['CLIENT_SECRET'],
+            'client_id': os.getenv('CLIENT_ID'),
+            'secret': os.getenv('CLIENT_SECRET'),
         },
         'AUTH_PARAMS': {
             'access_type':'online',
@@ -75,8 +75,12 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 MIDDLEWARE = [
+    'tracking.middleware.VisitorTrackingMiddleware',
+    # 'api.middleware.PostVistiorMiddlware',
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -143,16 +147,17 @@ SIMPLE_JWT = {
 APPEND_SLASH=False
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:8000').split(',')
 CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'borderlessApi.urls'
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.environ['EMAIL_HOST']
-EMAIL_PORT = os.environ['EMAIL_PORT']
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ['EMAIL_HOST']
-EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 
@@ -167,6 +172,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
             ],
         },
     },
@@ -192,10 +198,10 @@ CHANNEL_LAYERS = {
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-
+SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
+        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
@@ -223,7 +229,16 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGES = [
+    ("en", "English"),
+    ("zh-hans", "中文 (简体)"),
+    ("zh-hant", "中文 (繁體)"),
+]
+LANGUAGE_CODE = 'en'
+
+LOCALE_PATHS = [
+    os.path.join(BASE_DIR, 'locale'),
+]
 
 TIME_ZONE = 'UTC'
 
@@ -235,16 +250,27 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
-# pd
-STATIC_ROOT = os.path.join(BASE_DIR, 'static/') 
+# STATIC_URL = 'static/'
+# # pd
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static/') 
+
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
 
 # media path
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 # pd
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-COMPRESS_ROOT = os.path.join(BASE_DIR, 'static/') 
+# django-sendfile2 settings
+# SENDFILE_BACKEND = 'django_sendfile.backends.nginx' # nginx pd
+SENDFILE_BACKEND = 'django_sendfile.backends.development'  # For development only
+SENDFILE_ROOT = MEDIA_ROOT 
+SENDFILE_URL = '/protected_media' # Internal URL for Nginx to serve files
+
+
+
+COMPRESS_ROOT = os.path.join(BASE_DIR, 'static') 
  
 COMPRESS_ENABLED = True
  
@@ -253,9 +279,6 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder'
 )
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -276,9 +299,14 @@ AUTO_LOGOUT = {
     'MESSAGE': 'The session has expired. Please login again to continue.',
 }
 
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_EMAIL_REQUIRED = True
+# ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_SIGNUP_FIELDS = [
+    'email*', 'password1*', 'password2*'
+]
+ACCOUNT_LOGIN_METHODS = {
+    'email'
+}
 ACCOUNT_EMAIL_VERIFICATION = 'optional'
 
 AUTHENTICATION_BACKENDS = [
@@ -287,6 +315,32 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SITE_ID = 2
-LOGIN_URL = 'accounts/login/'
+LOGIN_URL = 'web/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = "login"
+
+# celery
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+# geoip
+GEOIP_PATH = BASE_DIR / 'geoip'
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'console': {
+#             'class': 'logging.StreamHandler',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console'],
+#             'level': 'DEBUG',
+#         },
+#     },
+# }

@@ -7,6 +7,9 @@ import numpy as np
 
 from allauth.socialaccount.models import SocialAccount
 
+def avatar_upload_path(instance, filename):
+    return f"user_avatars/{instance.user_id}/{filename}"
+
 class CustomUserManager(BaseUserManager):
     def _create_user(self, email, username, password=None, **extra_fields):
         if not email:
@@ -34,7 +37,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=150,)
     user_id = models.CharField(max_length=15, unique=True)
-    avatar = ResizedImageField(upload_to='avatars/', size=[320, None], null=True, blank=True, default='avatars/avatar.jpg')
+    avatar = ResizedImageField(upload_to=avatar_upload_path, size=[320, None], null=True, blank=True, default='/avatars/avatar.jpg')
     bio = models.CharField(max_length=250, blank=True, default='')
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
@@ -61,9 +64,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         id_list = []
 
         # returns random charactor
-        lower = random.choices(low_char, weights=None, cum_weights=None, k=3)
-        capital = random.choices(capital_char, weights=None, cum_weights=None, k=3)
-        number = random.choices(numbers, weights=None, cum_weights=None, k=3)
+        lower = random.choices(low_char, weights=None, cum_weights=None, k=5)
+        capital = random.choices(capital_char, weights=None, cum_weights=None, k=5)
+        number = random.choices(numbers, weights=None, cum_weights=None, k=5)
         
         # append into the list
         id_list.append(lower)
@@ -76,10 +79,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         
         # shuffle the list
         random.shuffle(id_list)
-        user_id = ''
-        
-        for i in id_list:
-            user_id += i
+        user_id = ''.join(id_list)
         
         # Check if the ID is unique
         while CustomUser.objects.filter(user_id=user_id).exists():
@@ -96,8 +96,3 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         if not self.avatar:
             self.avatar = 'avatars/avatar.jpg'
         super().save(*args, **kwargs)
-
-
-
-
-

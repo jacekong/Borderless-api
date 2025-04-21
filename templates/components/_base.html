@@ -1,7 +1,7 @@
 
 {% load compress %}
 {% load static %} 
-
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,31 +12,73 @@
     {% compress css %}
     <link rel="stylesheet" href="{% static 'src/output.css' %}">
     {% endcompress %}
-
+    <link rel="icon" href="{% static 'favicon/favicon.png' %}" type="image/png">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans&family=Noto+Sans+Thai&family=Noto+Sans+SC&display=swap" rel="stylesheet">
     <script src="{% static 'js/theme.js' %}"></script>
+    <script src="{% static 'js/chat_websocket.js' %}"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+    <script src="{% url 'javascript-catalog' %}"></script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900">
 
   {% include "components/navbar.html" %}
   <div id="home_container" class="sm:grid sm:grid-cols-[7rem_1fr]">
     {% include "components/aside.html" %}
-    <main class="sm:col-start-2 bg-white dark:bg-gray-900 sm:ml-60 mx-auto">
-      {% block content %}
-      {% endblock content %}
+    <main class="sm:col-start-2 bg-white dark:bg-gray-900 sm:ml-60 mx-auto" id="content-container">
+        {% block content %}
+        {% endblock content %}
     </main>
   </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  {% include "components/share_post.html" %}
 
   <hr class="my-6 border-gray-200 sm:mx-auto dark:border-gray-500 lg:my-8" />
   <div class="container mx-auto flex justify-center items-center w-full">
       <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400 my-7">© 2024 | Borderless <a href="#" class="hover:underline text-gray-500 dark:text-gray-100">made by Jace</a>. All Rights Reserved.</span>
   </div>
 
+  <div id="topBtn" onclick="goTop();" class="fixed bottom-7 right-7">
+    <svg class="w-3 h-3 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 8">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7 7.674 1.3a.91.91 0 0 0-1.348 0L1 7"/>
+    </svg>
+  </div>
+
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+  <script>
+    window.reply = gettext('Reply');
+    window.replyTo = gettext('replied to');
+    window.requestSent = gettext('Request Sent');
+  </script>
+
+  <script>
+    const currentUserId = "{{ request.user.user_id|default:'' }}";
+  </script>
   <script src="{% static 'js/app.js' %}"></script>
   <script src="{% static 'js/image_slider.js' %}"></script>
+  <script type="module" src="{% static 'js/toast.js' %}"></script>
+  <script type="module" src="{% static 'js/friend_request.js' %}"></script>
+  <script src="{% static 'js/like.js' %}"></script>
+  <script type="module" src="{% static 'js/posts.js' %}"></script>
+  <script type="module" src="{% static 'js/share.js' %}"></script>
+  <script type="module" src="{% static 'js/menu.js' %}"></script>
+  <script type="module" src="{% static 'js/search_friend.js' %}"></script>
+  <script src="{% static 'js/comment_socket.js' %}"></script>
+
   {% block script %}{% endblock script %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+  <link href="https://vjs.zencdn.net/8.0.0/video-js.css" rel="stylesheet" />
+  <script src="https://vjs.zencdn.net/8.0.0/video.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2canvas-pro.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/videojs-hls-quality-selector@2.0.0/dist/videojs-hls-quality-selector.min.css">
   
 </body>
 </html>

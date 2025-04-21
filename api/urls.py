@@ -12,9 +12,11 @@ urlpatterns = [
     
     # web
     path('', Index.as_view(), name='home'),
-    path('account/', AccountPage.as_view(), name='account'),
     path('web/post/comments/<str:post>', WebGetPostComments.as_view(), name='web_post_comments'),
-    
+    path('web/post/detail/<str:post_id>', WebPostDetail.as_view(), name='web_post_detail'),
+    path('web/post/create', WebRenderCreatePostTemplate.as_view(), name='web_post_creation'),
+    path('web/post/<str:post_id>/like/', LikePostView.as_view(), name='toggle_like'),
+    path('web/post/<str:post_id>/comment/', WebLoadCommentsView.as_view(), name='comments_list'),
 ]
 
 urlpatterns += websocket_urlpatterns

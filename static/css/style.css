@@ -10,4 +10,97 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    font-family: 'Open Sans', sans-serif;
 }
+
+/* create post html */
+.emoji-picker-show {
+    display: block;
+    z-index: 99;
+    position: absolute;
+    top: 20;
+}
+/* x create post html x */
+
+.active {
+    background-color: #3490dc;
+}
+
+/* toast */
+#toast-container {
+    position: fixed;
+    top: 20px;
+    right: 7px;
+    z-index: 1000;
+  }
+  
+.toast {
+  position: relative;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 7px 12px;
+  margin-bottom: 10px;
+  border-radius: 2em;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.toast.show {
+  opacity: 1;
+}
+
+.toast.success {
+  background-color: #28a745; /* Green */
+}
+
+.toast.error {
+  background-color: #dc3545; /* Red */
+}
+
+.toast.info {
+  background-color: #17a2b8; /* Cyan */
+}
+
+.toast.message {
+  background-color: #6c757d; /* Gray */
+}
+
+.toast-icon {
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+.toast-message {
+  flex-grow: 1;
+}
+
+.toast-close {
+  margin-left: 10px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.toast-close:hover {
+  color: #ddd;
+}
+/* x toast x */
+
+/* comment */
+
+/* x comment x */
+
+/* progress bar */
+
+/* x progress bar x */

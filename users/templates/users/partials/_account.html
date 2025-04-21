@@ -1,0 +1,47 @@
+{% load i18n %}
+<div class="mt-5">
+</div>
+<div class="container mx-auto mt-16 px-1">
+    <div class="max-w-4xl mx-auto bg-white dark:bg-gray-900 rounded-lg overflow-hidden shadow-lg mb-3">
+        <div class="px-4 pb-6">
+            <div class="flex flex-col md:flex-row justify-center items-center text-center my-6">
+                <img class="md:h-24 h-20 md:w-24 w-20 rounded-full border-4 border-white dark:border-gray-800 shadow-lg mb-4 md:mb-0 md:mr-8"
+                    src="{{ user.avatar.url }}" alt="{{ user.username }}">
+                <div class="text-center md:text-left">
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ user.username }}</h1>
+                    <div class="flex flex-wrap justify-center md:justify-start mt-2 space-x-4">
+                        <span class="text-gray-700 dark:text-gray-300"><strong>{{ posts.count }}</strong> {% trans "posts" %}</span>
+                        <span class="text-gray-700 dark:text-gray-300"><strong>{{ friends }}</strong> {% trans "followers" %}</span>
+                        <span class="text-gray-700 dark:text-gray-300"><strong>{{ friends }}</strong> {% trans "following" %}</span>
+                    </div>
+                    <div class="flex justify-start mt-2 align-middle justify-items-center">
+                        <span>{% trans "Bio:" %}</span>
+                        <p class="text-gray-600 dark:text-gray-400">{{ user.bio }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post Grid -->
+            <div class="mt-8" id="profile-post-container">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">{% trans "Posts" %}</h2>
+                {% include "users/partials/_post_grid.html" %}
+            </div>
+        </div>
+    </div>
+    {{nex_page}}
+   <!-- Pagination Controls -->
+   {% if posts.has_next %}
+    <div class="flex justify-center">
+        <button
+        hx-get="{% url 'account' %}"
+        hx-vals="{'profile_page': '{{profile_next_page}}'}"
+        hx-trigger="click"
+        hx-target="#profile-post-container"
+        hx-swap="beforeend"
+        class="mt-4 mx-auto px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700"
+        >
+        {% trans "Load More" %}
+        </button>
+    </div>
+   {% endif %}
+</div>

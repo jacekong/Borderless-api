@@ -4,6 +4,11 @@ from rest_framework import serializers
 # from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 # from rest_framework_simplejwt.tokens import RefreshToken
 
+import os
+import shutil
+from django.conf import settings
+from django.core.files import File
+
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6, required=True)
     # avatar_url = serializers.SerializerMethodField()
@@ -36,6 +41,25 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(password)
         if avatar:
             user.avatar = avatar
+        # else:
+        #     # No avatar provided; assign the default avatar
+        #     default_avatar_path = os.path.join(settings.MEDIA_ROOT, 'avatars', 'avatar.jpg')
+        #     if not os.path.exists(default_avatar_path):
+        #         raise serializers.ValidationError("Default avatar file not found at media/avatars/avatar.jpg")
+
+        #     # Define the destination path using avatar_upload_path
+        #     user_dir = f"user_avatars/{user.user_id}"
+        #     destination_dir = os.path.join(settings.MEDIA_ROOT, user_dir)
+        #     os.makedirs(destination_dir, exist_ok=True)  # Create user directory if it doesn't exist
+
+        #     # Copy the default avatar to the user's directory
+        #     destination_path = os.path.join(destination_dir, 'avatar.jpg')
+        #     shutil.copyfile(default_avatar_path, destination_path)
+
+        #     # Assign the file to the avatar field using Django's File object
+        #     with open(destination_path, 'rb') as f:
+        #         user.avatar.save('avatar.jpg', File(f), save=False)
+            
         user.save()
         
         return user

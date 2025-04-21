@@ -1,0 +1,30 @@
+.dep-panel {
+    display: none;
+    position: absolute;
+}
+
+.dep-container {
+    position: relative;
+    display: inline-block;
+}
+
+.dep-button {
+    position: absolute;
+    right: -1.5rem;
+    top: .5rem;
+    height: 1rem;
+    color: gray;
+    cursor: pointer;
+}
+
+@media (max-width: 767px) {
+    .dep-container {
+        position: relative;
+        display: flex;
+        width: 100%;
+    }
+
+    .dep-button {
+        display: none;
+    }
+}

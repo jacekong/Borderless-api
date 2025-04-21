@@ -1,0 +1,39 @@
+{% load i18n %}
+<div class="container px-4 ml-4">
+    <div class="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div class="p-6">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">{% trans "Latest Public Posts" %}</h1>
+            {% if public_posts %}
+            <div class="space-y-4">
+                {% for post in public_posts %}
+                <div class="flex items-center p-4 bg-gray-50 rounded-lg dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
+                    <a href="{% url 'friend_detail' post.author.user_id %}" class="w-7 h-7 mr-4 rounded-full overflow-hidden inline-block">
+                        <img class="w-full h-full object-cover" src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}'s avatar">
+                    </a>
+                    <div class="flex-grow">
+                            <div class="flex justify-items-start align-baseline">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ post.author.username }}</p>
+                                <p class="ml-2 text-2xs text-gray-900 dark:text-gray-500">{{ post.created_date|timesince }} {% trans "ago" %}</p>
+                            </div>
+                                <a href="{% url 'web_post_detail' post.post_id %}">
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ post.post_content|truncatechars:50 }}</p>
+                                </a>
+                                </div>
+                                <button class="public-post-like-button text-2xs px-4 py-2 {% if request.user in post.likes.all %} bg-gray-600 {% else %} bg-blue-600 {% endif %} text-white rounded-lg hover:bg-blue-500 transition duration-150 ease-in-out" data-post-id="{{ post.post_id }}">
+                                    {% if request.user in post.likes.all %}{% trans "Unlike" %}{% else %}{% trans "Like" %}{% endif %}
+                                </button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">{% trans "No public posts found" %}</h3>
+                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{% trans "There are no recent public posts to display." %}</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+</div>

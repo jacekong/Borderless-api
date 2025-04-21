@@ -12,13 +12,16 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.db.models import Q
 
+from django.http import JsonResponse
+
+from notification.models import Notification
+
 # api 
 # get posts and create post
 class PostsAPIView(APIView):
     parser_classes = [FormParser, MultiPartParser]
     permission_classes = [IsAuthenticated]
 
-    @csrf_exempt
     def post(self, request, *args, **kwargs):
         request.data._mutable=True
         request.data['author_id'] = request.user.id
@@ -27,9 +30,9 @@ class PostsAPIView(APIView):
         
         if post_serializer.is_valid():
             
-            post_serializer.save()  
+            post_serializer.save()
 
-            return Response(post_serializer.data, status=201)
+            return JsonResponse({'success': 'Post created successfully'}, status=status.HTTP_201_CREATED)
         return Response(post_serializer.errors, status=400)
 
     # get post based on user's friends, can only friends be seen each other
@@ -136,38 +139,190 @@ class LogoutView(APIView):
 from django.views import View
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse, HttpResponse
+from django.core.paginator import Paginator
+from django.template.loader import render_to_string
+from django.utils.translation import gettext as _
 
 class Index(LoginRequiredMixin, View):
+    N = 15
+    context = {}
+    
     def get(self, request):
         user = request.user
         friends_list = FriendList.objects.filter(user=user)
         if friends_list.exists():
             friend_ids = friends_list.values_list('friends', flat=True)
-            posts = Post.objects.prefetch_related('post_images').filter(Q(author=user) | Q(author__id__in=friend_ids)).order_by('-created_date')
+            posts_list = Post.objects.prefetch_related('post_images').filter(Q(author=user) | Q(author__id__in=friend_ids) | Q(is_public=True)).order_by('-created_date')
+
+            # latest public posts
+            public_posts = Post.objects.filter(is_public=True).order_by('-created_date')[:3] 
+            # set pagination
+            cookie_page = request.COOKIES.get('page')
+            user_click_page = request.GET.get('page')
             
-            context = {"posts": posts}
+            if user_click_page:
+                page = int(user_click_page)
+            elif cookie_page:
+                page = int(cookie_page)
+            else:
+                page = 1 
+                
+            paginator  = Paginator(posts_list, self.N, allow_empty_first_page=True)
             
-            return render(request, 'home/index.html', context)
+            posts = paginator.get_page(page)
+            
+            self.context = {"posts": posts, "public_posts": public_posts}
+            self.get_friends(user)
+
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                current_path = request.headers.get('X-Current-Path', '')
+                if current_path != '/':
+                    html = render_to_string('partials/_posts_feed.html', self.context, request=request)
+                else:
+                    html = render_to_string('posts/posts_entire.html', self.context, request=request)
+
+                return JsonResponse({
+                    'html': html,
+                    'has_next': posts.has_next(),
+                    'page': page,
+                })
+
+            response = render(request, 'home/index.html', self.context)
+            self.set_cookies(response, page)
+            
+            return response
         else:
-            posts = Post.objects.filter(Q(author=user) & Q(is_public=True))
-            context = {"posts": posts}
+            cookie_page = request.COOKIES.get('page')
+            user_click_page = request.GET.get('page')
             
-            return render(request, 'home/index.html', context)
+            if user_click_page:
+                page = int(user_click_page)
+            elif cookie_page:
+                page = int(cookie_page)
+            else:
+                page = 1 
+
+            posts_list = Post.objects.prefetch_related('post_images').filter(
+                Q(author=user) | Q(is_public=True)
+            ).order_by('-created_date')
+            
+            # latest public posts
+            public_posts = Post.objects.filter(is_public=True).order_by('-created_date')[:3] 
+
+            paginator = Paginator(posts_list, self.N, allow_empty_first_page=True)
+            posts = paginator.get_page(page)
+
+            self.context = {"posts": posts, "public_posts": public_posts}
+            self.get_friends(user)
+            
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                current_path = request.headers.get('X-Current-Path', '')
+                
+                if current_path != '/':
+                    html = render_to_string('partials/_posts_feed.html', self.context, request=request)
+                else:
+                    html = render_to_string('posts/posts_entire.html', self.context, request=request)
+                    
+                return JsonResponse({
+                    'html': html,
+                    'has_next': posts.has_next(),
+                    'page': page,
+                })
+            response = render(request, 'home/index.html', self.context)
+            self.set_cookies(response, page)
+            
+            return response
+        
+    def get_friends(self, user):
+        try:
+            friend_list = FriendList.objects.get(user=user.id)
+            friends = friend_list.friends.all()
+            # if not friends
+            friend_ids = list(friends.values_list('id', flat=True)) 
+            friend_ids.append(user.id)
+            self.context.update({
+                'friends': friend_ids
+            })
+        except FriendList.DoesNotExist:
+            friend_ids = []
+            # including login user
+            friend_ids.append(user.id)
+            self.context.update({
+                'friends': friend_ids
+            })
+        
+    def set_cookies(self, response, page):
+        response.set_cookie('page', page)
         
 class WebGetPostComments(LoginRequiredMixin, View):
     # get comments
     def get(self, request, post_id):
-        user  = request.user
         post_comments = get_object_or_404(PostComments, post=post_id)
         
         return JsonResponse(post_comments)
     
-class AccountPage(LoginRequiredMixin, View):
+class WebPostDetail(LoginRequiredMixin, View):
+    template = 'posts/post_detail.html'
+    
+    def get(self, request, post_id):
+        post = Post.objects.get(post_id=post_id)
+        context = {'post': post}
+        return render(request, self.template, context)
+    
+    
+class WebRenderCreatePostTemplate(LoginRequiredMixin, View):
+    template = 'posts/mobile_create_post.html'
+    
     def get(self, request):
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            html = render_to_string(self.template, {})
+            
+            return JsonResponse({'html': html}, status=status.HTTP_200_OK)
+        return render(request, 'posts/post_creation_template.html')
+    
+    
+# ----------------------------------------------------------------
+#  Liking machanism for post
+# ----------------------------------------------------------------
+class LikePostView(LoginRequiredMixin, View):
+    def post(self, request, post_id):
         user = request.user
+        post = get_object_or_404(Post, post_id=post_id)
+        if user in post.likes.all():
+            # Unlike the post
+            post.likes.remove(user)
+            action = 'unliked'
+        else:
+            # Like the post
+            post.likes.add(user)
+            action = 'liked'
+            # Notify the post owner (if not the same user)
+            if post.author != user:
+                Notification.objects.create(
+                    user=post.author,
+                    sender=user,
+                    message=_(f"liked your post"),
+                    type="like"
+                )
+
+        return JsonResponse({
+            'status': 'success',
+            'action': action,
+            'like_count': post.likes.count()
+        })
         
-        posts = Post.objects.prefetch_related('post_images').filter(author=user).order_by('-created_date')
-        context = {"posts": posts}
-        
-        return render(request, 'account/account.html', context=context)
+class WebLoadCommentsView(LoginRequiredMixin, View):
+    def get(self, request, post_id):
+        page = 1
+        post = Post.objects.get(post_id=post_id)
+        comments = post.post_comments.all().order_by('-created_at')
+        paginator = Paginator(comments, 10)
+        page_obj = paginator.get_page(page)
+        html = ''
+        for comment in page_obj.object_list:
+            if not comment.parent:
+                html += render_to_string('partials/comment_block.html', {'comment': comment, 'post': post, 'level': 0}, request=request)
+        return JsonResponse({
+            'html': html,
+            'has_next': page_obj.has_next(),
+        })

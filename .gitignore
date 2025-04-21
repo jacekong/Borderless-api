@@ -64,3 +64,5 @@ env.bak/
 venv.bak/
 
 */migrations/
+
+__MACOSX/

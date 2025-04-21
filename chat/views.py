@@ -186,6 +186,8 @@ def get_notification(request):
 from django.views import View
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.template.loader import render_to_string
+from django.http import JsonResponse
 
 class ChatHistoryWeb(LoginRequiredMixin, View):
     
@@ -195,7 +197,7 @@ class ChatHistoryWeb(LoginRequiredMixin, View):
         chat_message_receive = Messages.objects.filter(sender=receiver, receiver=sender)
         
         # Combine all messages into a single queryset
-        chat_history = chat_message_sent.union(chat_message_receive).order_by('timestamp')
+        chat_history = chat_message_sent.union(chat_message_receive).order_by('-timestamp')
         
         return chat_history
     
@@ -212,11 +214,12 @@ class ChatHistoryWeb(LoginRequiredMixin, View):
             'chat_history': chat_history,
         }
         
-        return render(request, 'your_template_name.html', context=context)
+        return render(request, '', context=context)
 
 class ChatWebPage(LoginRequiredMixin, View):
     
-    template_name = 'chat/chat.html'
+    partial_template = 'chat/partials/_chat_list_partials.html'
+    template = 'chat/chatlist.html'
     
     def get(self, request, *args, **kwargs):
         logged_in_user = request.user
@@ -244,34 +247,34 @@ class ChatWebPage(LoginRequiredMixin, View):
             'chat_list': chat_lists,
             'contact_latest_messages': contact_latest_messages
         }
+
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            html = render_to_string(self.partial_template, context)
+            
+            return JsonResponse({'html': html}, status=status.HTTP_200_OK)
         
-        return render(request, self.template_name, context=context)
+        return render(request, self.template, context=context)
     
 class ChatAreaWebView(LoginRequiredMixin, View):
     template_name = 'chat/chat_area.html'
+    full_chat_area = 'chat/chat_area_full.html'
     
-    def get(self, request, *args, **kwargs):
+    def get(self, request, user_id, *args, **kwargs):
         login_user = request.user
-        chat_user = kwargs.get('user_id')
-        
-        print(chat_user)
-        
+
+        chat_user = CustomUser.objects.get(user_id=user_id)
+
         chat_history_view = ChatHistoryWeb()
         chat_history = chat_history_view.get_chat_history(login_user, chat_user)
         
-        
         context = {
-            'chat_history': chat_history
+            'chat_history': chat_history,
+            'chat_user': chat_user
         }
         
-        return render(request, self.template_name, context=context)
-        
-        
-        
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            html = render_to_string(self.template_name, context)
+            
+            return JsonResponse({'html': html}, status=status.HTTP_200_OK)
     
-        
-        
-    
-        
-        
-
+        return render(request, self.full_chat_area, context=context)

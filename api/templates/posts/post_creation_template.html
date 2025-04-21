@@ -1,0 +1,9 @@
+{% extends "components/_base.html" %}
+{% load i18n %}
+{% block title %}
+    {% trans "Create a new post" %}
+{% endblock title %}
+{% block content %}
+    <div class="mt-16"></div>
+    {% include "posts/create_post.html" %}
+{% endblock content %}
