@@ -218,6 +218,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // open modal if open from notification
+    const params = new URLSearchParams(window.location.search);
+    const post_id = window.location.pathname.split('/').pop();
+  
+    const modal = document.getElementById('modal-' + post_id);
+    
+    if (params.get('openModal') === 'true') {
+      if (modal) {
+        modal.classList.remove('hidden');
+        activePostId = post_id;
+        if (activeSocket) {
+          activeSocket.close();
+          activeSocket = null;
+        }
+        connectWebSocket(post_id);
+      }
+    }
+  
+    document.querySelectorAll('.close-comment-modal').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+    });
+
     // async function loadMoreComments(postId) {
     //     commentPages[postId] = (commentPages[postId] || 1) + 1;
     //     const baseUrls = window.location.hostname

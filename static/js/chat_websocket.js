@@ -67,7 +67,7 @@ function openChat(userId, username, avatarUrl) {
       if (chatBackBtn) {
         chatBackBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          window.history.back();
+          window.location.replace('/web/chat/page/');
         });
       }
 
@@ -316,6 +316,45 @@ function setupMessageInput() {
 document.addEventListener('DOMContentLoaded', () => {
   setupMessageInput();
   // loadChatList();
+
+  const homeBtn = document.getElementById('home-page-btn');
+  const accountBtn = document.getElementById('account-btn');
+  const friendsBtn = document.getElementById('friends-btn');
+  const searchFriendsBtn = document.getElementById('search-friend-btn');
+  const createPostBtn = document.getElementById('create-post-btn');
+  const messageBtn = document.getElementById('message-btn');
+    
+  homeBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (chatSocket) chatSocket.close();
+    if (activeChatUserId) activeChatUserId = null;
+  });
+  accountBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (chatSocket) chatSocket.close();
+    if (activeChatUserId) activeChatUserId = null;
+  });
+  friendsBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (chatSocket) chatSocket.close();
+    if (activeChatUserId) activeChatUserId = null;
+  });
+  searchFriendsBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (chatSocket) chatSocket.close();
+    if (activeChatUserId) activeChatUserId = null;
+  });
+  createPostBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (chatSocket) chatSocket.close();
+    if (activeChatUserId) activeChatUserId = null;
+  });
+  messageBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (chatSocket) chatSocket.close();
+    if (activeChatUserId) activeChatUserId = null;
+  });
+
 });
 
 window.addEventListener('beforeunload', () => {
@@ -330,9 +369,8 @@ window.addEventListener('unload', () => {
 window.addEventListener('popstate', (event) => {
   if (event.state && event.state.userId && event.state.username) {
     showChatArea(event.state.userId, event.state.username);
-  } else {
-    // loadChatList();
-  }
+  } 
+  // else {
+  //   // loadChatList();
+  // }
 });
-
-// export {loadChatList};

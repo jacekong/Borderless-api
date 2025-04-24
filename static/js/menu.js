@@ -33,17 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!mainContainer) {
             return;
         }
-        // get backdrop
-        if (drawer) {
-            const backdrop = document.querySelector('[drawer-backdrop]')
-            drawer.classList.add('-translate-x-full');
-            drawer.classList.remove('transform-none');
-            if (backdrop) {
-                backdrop.remove();
-                body.classList.remove('overflow-hidden');
-            }
-        }
-
+        // Loading animation
         const { url, path, title } = pages[pageKey];
 
         try {
@@ -64,11 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
             mainContainer.innerHTML = data.html;
 
             history.pushState({ page: pageKey }, '', path);
+            addActiveClassToButton(homeBtn);
             document.title = title;
             reinitializeDynamicContent();
             // Initialize friend request forms
             initializeFriendRequestForms();
         } catch (error) {
+            homeBtn.classList.remove('bg-gray-100', 'dark:bg-gray-700');
             console.error('Error loading home page:', error.message);
         }
     }
@@ -98,7 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
             mainContainer.innerHTML = data.html;
 
             history.pushState({ page: 'account' }, '', '/web/account/');
+            addActiveClassToButton(accountBtn);
         } catch (error) {
+            accountBtn.classList.remove('bg-gray-100', 'dark:bg-gray-700');
             console.error('Error loading account page:', error.message);
         }
     }
@@ -108,22 +102,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!mainContainer) {
             return;
         }
-      fetch(url, {
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-        },
-      })
-        .then(response => {
-          if (!response.ok) throw new Error('Failed to load chat list');
-          return response.json();
+        fetch(url, {
+            headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            },
         })
-        .then(data => {
-          document.getElementById('content-container').innerHTML = data.html;
-          document.getElementById('message-btn').classList.add('bg-gray-100', 'dark:bg-gray-700');
-        //   setupMessageInput();
-          history.pushState({ page: pageKey }, '', path);
-        })
-        .catch(error => console.error('Error loading chat list:', error));
+            .then(response => {
+            if (!response.ok) throw new Error('Failed to load chat list');
+            return response.json();
+            })
+            .then(data => {
+                mainContainer.innerHTML = data.html;
+                //   setupMessageInput();
+                history.pushState({ page: pageKey }, '', path);
+                addActiveClassToButton(messageBtn);
+            })
+            .catch(error => console.error('Error loading chat list:', error));
     }
 
     // Load friends list via AJAX
@@ -131,7 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!mainContainer) {
             return;
         }
-
 
         const url = `${baseUrl}/web/friend/list/`;
 
@@ -152,8 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
             mainContainer.innerHTML = data.html;
 
             history.pushState({ page: 'friend' }, '', '/web/friend/list/');
+            addActiveClassToButton(friendsBtn);
             reinitializeDynamicContent();
         } catch (error) {
+            friendsBtn.classList.remove('bg-gray-100', 'dark:bg-gray-700');
             console.error('Error loading friends list:', error.message);
         }
     }
@@ -163,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!mainContainer) {
             return;
         }
-
 
         const url = `${baseUrl}/web/search/friends/`;
 
@@ -184,8 +178,9 @@ document.addEventListener('DOMContentLoaded', () => {
             mainContainer.innerHTML = data.html;
 
             history.pushState({ page: 'search-friends' }, '', '/web/search/friends/');
-
+            addActiveClassToButton(searchFriendsBtn);
         } catch (error) {
+            searchFriendsBtn.classList.remove('bg-gray-100', 'dark:bg-gray-700');
             console.error('Error loading search friends page:', error.message);
         }
     }
@@ -195,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!mainContainer) {
             return;
         }
-
 
         const url = `${baseUrl}/web/post/create`;
 
@@ -216,10 +210,23 @@ document.addEventListener('DOMContentLoaded', () => {
             mainContainer.innerHTML = data.html;
 
             history.pushState({ page: 'create-post' }, '', '/web/post/create');
+            addActiveClassToButton(createPostBtn);
             reinitializeDynamicContent();
         } catch (error) {
+            createPostBtn.classList.remove('bg-gray-100', 'dark:bg-gray-700');
             console.error('Error loading create post page:', error.message);
         }
+    }
+
+    function addActiveClassToButton(button) {
+        const buttons = [homeBtn, accountBtn, friendsBtn, searchFriendsBtn, createPostBtn, messageBtn];
+        buttons.forEach(btn => {
+            if (btn !== button) {
+                btn.classList.remove('bg-gray-100', 'dark:bg-gray-700');
+            } else {
+                btn.classList.add('bg-gray-100', 'dark:bg-gray-700');
+            }
+        });
     }
 
     function reinitializeDynamicContent() {

@@ -54,7 +54,7 @@ def updateUser(request, *args, **kwargs):
 
     if serializer.is_valid():
         serializer.save()  # Save the updated user instance
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'data':serializer.data, 'redirect_url': '/web/account/', 'message': 'success'}, status=status.HTTP_200_OK)
     
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -144,26 +144,34 @@ class AccountPage(LoginRequiredMixin, View):
         user = request.user
         # get login user's posts
         posts_list = Post.objects.prefetch_related('post_images').filter(author=user).order_by('-created_date')
-        page_number = int(request.GET.get('profile_page', 1))
+        page = request.GET.get('page', 1)
         paginator  = Paginator(posts_list, self.N, allow_empty_first_page=True)
-        posts = paginator.get_page(page_number)
-        next_page = page_number + 1 if posts.has_next() else None
-        print('------get page -------')
-        print(f"Page {page_number}, has_next: {posts.has_next()}")
+        posts = paginator.get_page(page)
         # get all friends 
         try:
             friend_list = FriendList.objects.get(user=user.id)
             friends = friend_list.friends.all()
-            context = {"posts": posts, "friends": len(friends), "user": user, "profile_next_page": next_page}
+            context = {"posts": posts, "friends": len(friends), "user": user}
         except FriendList.DoesNotExist:
-            context = {"posts": posts, "friends": 0, "user": user, "profile_next_page": next_page}
+            context = {"posts": posts, "friends": 0, "user": user}
         
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            html = render_to_string('users/partials/_account.html', context)
+            current_path = request.headers.get('X-Current-Path', '')
+            if current_path != '/web/account/':
+                html = render_to_string('users/partials/_account.html', context)
+            else:
+                html = render_to_string('users/partials/_post_grid.html', context)
             
-            return JsonResponse({'html': html}, status=status.HTTP_200_OK)
-        
-        if request.headers.get('HX-Request') == 'true':
-            return render(request, 'users/partials/_post_grid.html', context)
+            return JsonResponse({'html': html, "page": page, "has_next": posts.has_next()}, status=status.HTTP_200_OK)
 
         return render(request, 'users/account.html', context)
+    
+class WebUserProfile(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        
+        context = {
+            'user': user,
+        }
+
+        return render(request, 'users/update_profile.html', context)

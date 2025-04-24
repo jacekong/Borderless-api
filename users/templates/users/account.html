@@ -17,8 +17,8 @@
                         <span class="text-gray-700 dark:text-gray-300"><strong>{{ friends }}</strong> {% trans "following" %}</span>
                     </div>
                     <div class="flex justify-start mt-2 align-middle justify-items-center">
-                        <span>{% trans "Bio" %}:</span>
-                        <p class="text-gray-600 dark:text-gray-400">{{ user.bio }}</p>
+                        <span>{% trans "Bio" %}: &nbsp;</span>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">{{ user.bio }}</p>
                     </div>
                 </div>
             </div>
@@ -26,28 +26,7 @@
             <!-- Post Grid -->
             <div class="mt-8" id="profile-post-container">
                 <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">{% trans "Posts" %}</h2>
-                <div class="grid md:grid-cols-4 grid-cols-3 gap-2">
-                    {% for post in posts %}
-                        <a href="{% url 'web_post_detail' post.post_id %}">
-                            <div class="relative aspect-square">
-                            {% if post.post_images.all|length > 0 %}
-                                {% with first_image=post.post_images.all|first %}
-                                    <img class="w-full h-full object-cover rounded-lg" src="{{ first_image.images.url }}" alt="">
-                                {% endwith %}
-                                {% if post.post_images.all|length > 1 %}
-                                    <span class="absolute bottom-2 right-2">
-                                        <svg class="h-7 w-7" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 95.04"><defs><style>.cls-1{fill-rule:evenodd;}</style></defs><title>pictures</title><path class="cls-1" d="M93.22,33.05a9.46,9.46,0,1,1-9.47,9.46,9.45,9.45,0,0,1,9.47-9.46Zm7.49-22.22v-3H7.86V74.32h4.43v7.86H6.89a6.87,6.87,0,0,1-4.86-2,6.81,6.81,0,0,1-2-4.85V6.89A6.9,6.9,0,0,1,6.89,0h94.79a6.9,6.9,0,0,1,6.89,6.89v3.94Zm9.16,76.36L93.47,61a3.76,3.76,0,0,0-6.37,0L79.36,73.47l8.42,13.72H84.32l-23-36.68a4.37,4.37,0,0,0-7.4,0L31.47,87.19H28.32V26.83H115V87.19ZM116,95H27.35a6.91,6.91,0,0,1-6.89-6.88V25.86A6.91,6.91,0,0,1,27.35,19H116a6.9,6.9,0,0,1,6.88,6.88v62.3A6.91,6.91,0,0,1,116,95Z"/></svg>
-                                    </span>
-                                {% endif %}
-                            {% else %}
-                                <div class="w-full h-full flex items-center justify-center bg-gray-200 dark:bg-gray-700 rounded-lg">
-                                    <p class="text-gray-500 dark:text-gray-400 md:text-sm text-2xs">{{ post.post_content|truncatewords:10 }}</p>
-                                </div>
-                            {% endif %}
-                            </div>
-                        </a>
-                    {% endfor %}
-                </div>
+                {% include "users/partials/_post_grid.html" %}
             </div>
         </div>
     </div>
@@ -55,14 +34,8 @@
     {% if posts.has_next %}
     <div class="flex justify-center">
       <button
-        hx-get="{% url 'account' %}"
-        hx-vals='{"profile_page": "{{ profile_next_page }}"}'
-        hx-trigger="click"
-        hx-target="#profile-post-container"
-        hx-swap="beforeend"
-        hx-target-closest="#pagination-controls"
-        hx-swap-closest="outerHTML"
-        hx-push
+        id="load-more-posts"
+        onclick="loadMoreAccountPosts()"
         class="mt-4 mx-auto px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700"
       >
         {% trans "Load More" %}

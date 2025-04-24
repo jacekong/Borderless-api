@@ -20,7 +20,8 @@ def get_notifications(request):
                 'username': n.sender.username,
                 'user_id': n.sender.user_id,
                 'avatar': n.sender.avatar.url if n.sender and n.sender.avatar else '/media/avatars/avatar.jpg'
-            } if n.sender else None
+            } if n.sender else None,
+            'related_link': n.related_link,
         } for n in unsent_notifications
     ]
     unsent_notifications.update(is_sent=True)
@@ -37,7 +38,8 @@ def get_notifications(request):
                 'username': n.sender.username,
                 'user_id': n.sender.user_id,
                 'avatar': n.sender.avatar.url if n.sender and n.sender.avatar else '/media/avatars/avatar.jpg'
-            } if n.sender else None
+            } if n.sender else None,
+            'related_link': n.related_link,
         } for n in all_notifications
     ]
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-21 00:37+0700\n"
+"POT-Creation-Date: 2025-04-22 20:33+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,7 +27,7 @@ msgstr "追踪"
 #: api/templates/posts/post_detail.html:24
 #: notification/templates/notifications.html:16
 #: notification/templates/partials/_notifications.html:14
-#: templates/components/_top_public_post.html:18
+#: templates/components/_top_public_post.html:16
 #: templates/partials/comment_block.html:25
 msgid "ago"
 msgstr "前"
@@ -51,13 +51,13 @@ msgstr "视频正在转码中。。。"
 
 #: api/templates/partials/_posts_feed.html:137
 #: api/templates/posts/post_detail.html:135
-#: templates/components/_top_public_post.html:25
+#: templates/components/_top_public_post.html:23
 msgid "Unlike"
 msgstr "取消"
 
 #: api/templates/partials/_posts_feed.html:137
 #: api/templates/posts/post_detail.html:135
-#: templates/components/_top_public_post.html:25
+#: templates/components/_top_public_post.html:23
 msgid "Like"
 msgstr "喜欢"
 
@@ -104,8 +104,8 @@ msgstr "删除"
 #: api/templates/posts/posts_entire.html:24
 #: notification/templates/notifications.html:41
 #: notification/templates/partials/_notifications.html:38
-#: templates/home/index.html:33 users/templates/users/account.html:68
-#: users/templates/users/partials/_account.html:43
+#: templates/home/index.html:33 users/templates/users/account.html:41
+#: users/templates/users/partials/_account.html:40
 msgid "Load More"
 msgstr "加载更多"
 
@@ -141,7 +141,7 @@ msgid "Friend List"
 msgstr "朋友列表"
 
 #: friend/templates/partials/_friends_list.html:16
-#: templates/components/aside.html:57 templates/friends/friend_detail.html:37
+#: templates/components/aside.html:56 templates/friends/friend_detail.html:37
 msgid "Message"
 msgstr "消息"
 
@@ -245,7 +245,7 @@ msgstr "您有新的通知"
 msgid "Back to Home"
 msgstr "返回主页"
 
-#: notification/views.py:57
+#: notification/views.py:59
 msgid "Notification not found"
 msgstr "没有通知"
 
@@ -329,11 +329,11 @@ msgstr ""
 msgid "Latest Public Posts"
 msgstr "最新广场贴文"
 
-#: templates/components/_top_public_post.html:35
+#: templates/components/_top_public_post.html:33
 msgid "No public posts found"
 msgstr "暂时没有广场贴文"
 
-#: templates/components/_top_public_post.html:36
+#: templates/components/_top_public_post.html:34
 msgid "There are no recent public posts to display."
 msgstr "这里没有最近广场贴文"
 
@@ -357,16 +357,16 @@ msgstr "主页"
 msgid "My Account"
 msgstr "我的账户"
 
-#: templates/components/aside.html:70
+#: templates/components/aside.html:69
 msgid "Friends"
 msgstr "朋友列表"
 
-#: templates/components/aside.html:90 templates/friends/search_friend.html:14
+#: templates/components/aside.html:89 templates/friends/search_friend.html:14
 #: users/templates/users/partials/_search_friends.html:5
 msgid "Search Friends"
 msgstr "查找朋友"
 
-#: templates/components/aside.html:109
+#: templates/components/aside.html:108
 msgid "Create post"
 msgstr "创建贴文"
 
@@ -417,6 +417,7 @@ msgstr "跟随"
 
 #: templates/friends/friend_detail.html:24
 #: users/templates/users/account.html:20
+#: users/templates/users/update_profile.html:50
 msgid "Bio"
 msgstr "简介"
 
@@ -430,24 +431,24 @@ msgstr "贴文"
 msgid " Message"
 msgstr "消息"
 
-#: templates/friends/search_friend.html:24
+#: templates/friends/search_friend.html:23
 #: users/templates/users/partials/_search_friends.html:15
 #: venv/lib/python3.10/site-packages/semantic_admin/templatetags/awesomesearch.py:40
 #: venv/lib/python3.10/site-packages/semantic_admin/templatetags/awesomesearch.py:69
 msgid "Search"
 msgstr "查找"
 
-#: templates/friends/search_friend.html:42
+#: templates/friends/search_friend.html:40
 #: users/templates/users/partials/_search_friends.html:33
 msgid "Add Friend"
 msgstr "添加朋友"
 
-#: templates/friends/search_friend.html:53
+#: templates/friends/search_friend.html:51
 #: users/templates/users/partials/_search_friends.html:44
 msgid "No users found"
 msgstr "没有找到用户"
 
-#: templates/friends/search_friend.html:54
+#: templates/friends/search_friend.html:52
 #: users/templates/users/partials/_search_friends.html:45
 msgid "Try adjusting your search or filter to find what you're looking for."
 msgstr "尝试一下寻找的方式。"
@@ -552,6 +553,7 @@ msgid ""
 msgstr "在下面输入你的邮箱，我们会给你发送重置密码的邮件。"
 
 #: templates/registration/password_reset_form.html:26
+#: users/templates/users/update_profile.html:46
 msgid "Email"
 msgstr "邮箱"
 
@@ -567,13 +569,23 @@ msgstr "继续Google登陆"
 msgid "Continue"
 msgstr "继续"
 
-#: users/templates/users/account.html:72
+#: users/templates/users/account.html:45
 msgid "No more posts to load."
 msgstr "没有跟多贴文了"
 
 #: users/templates/users/partials/_account.html:18
 msgid "Bio:"
 msgstr "简介"
+
+#: users/templates/users/update_profile.html:40
+#, fuzzy
+#| msgid "Username"
+msgid "User Name"
+msgstr "用户名"
+
+#: users/templates/users/update_profile.html:57
+msgid "Save Changes"
+msgstr ""
 
 #: users/views.py:107
 msgid "Wrong credential, please try again...~..~"

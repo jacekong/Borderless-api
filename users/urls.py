@@ -1,12 +1,12 @@
 from django.urls import path
 from .views import UserRegistView, UserSearchAPIView, updateUser, getCurrentUser, UserAuth, logout_user
-from .views import WebSearchFriend, WebGetSearchForm, AccountPage
+from .views import WebSearchFriend, WebGetSearchForm, AccountPage, WebUserProfile
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path('user/register/', UserRegistView.as_view(), name='register'),
     path('current/user/', getCurrentUser),
-    path('user/update/', updateUser),
+    path('user/update/', updateUser, name='update_user'),
     path('api/users/search/', UserSearchAPIView.as_view()),
     
     # web
@@ -15,6 +15,7 @@ urlpatterns = [
     path('web/search/friends/', WebGetSearchForm.as_view(), name='search_friend'),
     path('web/search/frined/query/', WebSearchFriend.as_view(), name='search_friend_query'),
     path('web/account/', AccountPage.as_view(), name='account'),
+    path('web/profile/update/', WebUserProfile.as_view(), name='profile_update'),
     
     # Password reset URLs
     path('password_reset/', auth_views.PasswordResetView.as_view(

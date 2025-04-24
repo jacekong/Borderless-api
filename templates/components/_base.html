@@ -59,7 +59,7 @@
   <script>
     const currentUserId = "{{ request.user.user_id|default:'' }}";
   </script>
-  <script src="{% static 'js/app.js' %}"></script>
+  <script type="module" src="{% static 'js/app.js' %}"></script>
   <script src="{% static 'js/image_slider.js' %}"></script>
   <script type="module" src="{% static 'js/toast.js' %}"></script>
   <script type="module" src="{% static 'js/friend_request.js' %}"></script>
@@ -69,6 +69,7 @@
   <script type="module" src="{% static 'js/menu.js' %}"></script>
   <script type="module" src="{% static 'js/search_friend.js' %}"></script>
   <script src="{% static 'js/comment_socket.js' %}"></script>
+  <script type="module" src="{% static 'js/update_profile.js' %}"></script>
 
   {% block script %}{% endblock script %}
   <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>

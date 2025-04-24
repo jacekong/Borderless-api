@@ -15,8 +15,8 @@
                         <span class="text-gray-700 dark:text-gray-300"><strong>{{ friends }}</strong> {% trans "following" %}</span>
                     </div>
                     <div class="flex justify-start mt-2 align-middle justify-items-center">
-                        <span>{% trans "Bio:" %}</span>
-                        <p class="text-gray-600 dark:text-gray-400">{{ user.bio }}</p>
+                        <span>{% trans "Bio" %}:&nbsp;</span>
+                        <p class="text-xs text-gray-600 dark:text-gray-400">{{ user.bio }}</p>
                     </div>
                 </div>
             </div>
@@ -33,11 +33,8 @@
    {% if posts.has_next %}
     <div class="flex justify-center">
         <button
-        hx-get="{% url 'account' %}"
-        hx-vals="{'profile_page': '{{profile_next_page}}'}"
-        hx-trigger="click"
-        hx-target="#profile-post-container"
-        hx-swap="beforeend"
+        id="load-more-posts"
+        onclick="loadMoreAccountPosts()"
         class="mt-4 mx-auto px-4 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-700"
         >
         {% trans "Load More" %}

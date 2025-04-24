@@ -79,6 +79,8 @@ class CommentConsumer(AsyncWebsocketConsumer):
     def save_comment(self, sender_id, post_id, comment_text, parent_comment=None):
         sender = CustomUser.objects.get(user_id=sender_id)
         post = Post.objects.get(post_id=post_id)
+        # build related link for notification
+        related_link = f"{settings.BASE_URL}/web/post/detail/{post_id}"
         comment = PostComments.objects.create(
             sender=sender,
             post=post,
@@ -92,6 +94,7 @@ class CommentConsumer(AsyncWebsocketConsumer):
                 user=post.author,
                 sender=sender,
                 type='comment',
-                message=f'comment on your post: {comment_text}'
+                message=f'comment on your post: {comment_text}',
+                related_link=related_link
             )
         return comment

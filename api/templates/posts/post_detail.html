@@ -64,7 +64,7 @@
             <div class="image mb-3">
                 <div class="mySlides image-grid grid grid-cols-4 md:grid-cols-3 gap-1 mx-auto" data-post-id="{{ post.post_id }}">
                     {% for image in post.post_images.all %}
-                      <div class="image-container h-[90px] w-[90px] md:h-[200px] md:w-[180px]">
+                      <div class="image-container h-[80px] w-[80px] md:h-[200px] md:w-[180px]">
                         <img src="{{ image.images.url }}" class="h-full w-full object-cover" alt="post image" onclick="openModal('{{ post.post_id }}');currentSlide({{ forloop.counter0 }})" />
                       </div>
                     {% endfor %}

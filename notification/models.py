@@ -15,6 +15,7 @@ class Notification(models.Model):
     sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name='sent_notifications')
     message = models.CharField(max_length=255)
     type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='info')
+    related_link = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     is_sent = models.BooleanField(default=False)

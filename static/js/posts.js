@@ -379,9 +379,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Global loadMore function
-    window.loadMore = () => loadPosts(currentPage + 1);
-
     // Initialization
     function initializeCreatePost() {
         const elements = getElements();

@@ -91,7 +91,11 @@ function populateDropdown(notifications) {
 
   notifications.forEach(notif => {
     const item = document.createElement('a');
-    item.href = '#';
+    if (notif.related_link) {
+      item.setAttribute('href', `${notif.related_link}?openModal=true`);
+    } else {
+      item.href = '#';
+    }
     item.classList.add('flex', 'px-4', 'py-3', 'hover:bg-gray-100', 'dark:hover:bg-gray-700');
 
     const iconDiv = document.createElement('div');
