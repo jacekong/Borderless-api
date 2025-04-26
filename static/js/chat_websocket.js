@@ -75,8 +75,8 @@ function openChat(userId, username, avatarUrl) {
     })
     .catch(error => console.error('Error loading chat list:', error));
   }
-
-  if (!document.getElementById('chat-area')) {
+  // Handle desktop view
+  if (!document.getElementById('chat-area') && window.innerWidth > 768) {
     fetch('/web/chat/page/', {
       headers: {
         'X-Requested-With': 'XMLHttpRequest',
@@ -118,6 +118,7 @@ function openMobileChat(userId, username, avatarUrl) {
   if (clickedItem) {
     clickedItem.classList.add('active');
   }
+  console.log(window.innerWidth);
   
   // Handle mobile view
   if (window.innerWidth < 768) {

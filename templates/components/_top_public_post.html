@@ -6,25 +6,25 @@
             {% if public_posts %}
             <div class="space-y-4">
                 {% for post in public_posts %}
-                <div class="flex items-center p-4 bg-gray-50 rounded-lg dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out">
-                    <a href="{% url 'friend_detail' post.author.user_id %}" class="w-7 h-7 mr-4 rounded-full overflow-hidden inline-block">
+                <div class="flex items-center p-4 bg-gray-50 rounded-lg dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition duration-150 ease-in-out gap-4">
+                    <a href="{% url 'friend_detail' post.author.user_id %}" class="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
                         <img class="w-full h-full object-cover" src="{{ post.author.avatar.url }}" alt="{{ post.author.username }}'s avatar">
                     </a>
-                    <div class="flex-grow">
-                            <div class="flex justify-items-start align-baseline">
-                                <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ post.author.username }}</p>
-                                <p class="ml-2 text-2xs text-gray-900 dark:text-gray-500">{{ post.created_date|timesince }} {% trans "ago" %}</p>
-                            </div>
-                                <a href="{% url 'web_post_detail' post.post_id %}">
-                                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ post.post_content|truncatechars:50 }}</p>
-                                </a>
-                                </div>
-                                <button class="public-post-like-button text-2xs px-4 py-2 {% if request.user in post.likes.all %} bg-gray-600 {% else %} bg-blue-600 {% endif %} text-white rounded-lg hover:bg-blue-500 transition duration-150 ease-in-out" data-post-id="{{ post.post_id }}">
-                                    {% if request.user in post.likes.all %}{% trans "Unlike" %}{% else %}{% trans "Like" %}{% endif %}
-                                </button>
-                            </div>
-                        {% endfor %}
+                    <div class="flex-grow max-w-xs">
+                        <div class="flex justify-items-start align-baseline">
+                            <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ post.author.username }}</p>
+                            <p class="ml-2 text-2xs text-gray-900 dark:text-gray-500">{{ post.created_date|timesince }} {% trans "ago" %}</p>
+                        </div>
+                        <a href="{% url 'web_post_detail' post.post_id %}">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 break-words">{{ post.post_content|truncatechars:50 }}</p>
+                        </a>
                     </div>
+                    <button class="public-post-like-button text-2xs px-4 py-2 {% if request.user in post.likes.all %} bg-gray-600 {% else %} bg-blue-600 {% endif %} text-white rounded-lg hover:bg-blue-500 transition duration-150 ease-in-out flex-shrink-0">
+                        {% if request.user in post.likes.all %}{% trans "Unlike" %}{% else %}{% trans "Like" %}{% endif %}
+                    </button>
+                </div>
+                        {% endfor %}
+                </div>
                 {% else %}
                     <div class="text-center py-8">
                         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
